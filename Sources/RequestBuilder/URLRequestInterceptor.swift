@@ -16,6 +16,11 @@ public protocol URLRequestInterceptor: URLSessionManager {
 
 extension URLRequestInterceptor {
 
+    ///  Default handler returns base from parent in interceptor chain.
+    public var base: URL? {
+        parent.base
+    }
+
     /// Default handler returns request from parent in interceptor chain.
     public func request(forURL url: URL?) -> URLRequestBuilder {
         URLRequestBuilder(manager: self, builder: parent.request(forURL: url))

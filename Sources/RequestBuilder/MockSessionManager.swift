@@ -10,6 +10,8 @@ import Combine
 
 class MockSessionManager: URLSessionManager {
 
+    var base: URL?
+    
     private var data: Any?
     private let error: Error?
     private let status: Int

@@ -159,7 +159,7 @@ extension URLRequestBuilder {
     }
 
     /// Fetches requested data from the session manager and decodes it into the provided type.
-    public func data<T:Decodable>(type: T.Type, decoder: DataDecoder) -> some Publisher<T, Error> {
+    public func data<T:Decodable>(type: T.Type, decoder: DataDecoder) -> AnyPublisher<T, Error> {
         manager.data(for: request)
             .tryMap { (data, response) -> T in
                 if let data = data as? Data {
@@ -173,7 +173,7 @@ extension URLRequestBuilder {
                 }
                 throw URLError(.cannotDecodeContentData)
             }
-//            .eraseToAnyPublisher()
+            .eraseToAnyPublisher()
     }
 
 }

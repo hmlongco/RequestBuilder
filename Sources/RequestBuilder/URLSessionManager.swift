@@ -10,6 +10,9 @@ import Combine
 
 public protocol URLSessionManager: AnyObject {
 
+    // base
+    var base: URL? { get }
+
     // request support
     func request(forURL url: URL?) -> URLRequestBuilder
     func data(for request: URLRequest) -> AnyPublisher<(Any?, HTTPURLResponse?), Error>

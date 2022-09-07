@@ -49,6 +49,14 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
         mock(.init(status: status, data: { nil }, error: error), path: path)
     }
 
+    public func mock(json: String, status: Int = 200) {
+        mock(.init(status: status, data: {  json.data(using: .utf8) }, error: nil))
+    }
+
+    public func mock(path: String, json: String, status: Int = 200) {
+        mock(.init(status: status, data: { json.data(using: .utf8) }, error: nil), path: path)
+    }
+
     public func mock(status: Int) {
         mock(.init(status: status, data: { Data() }, error: nil))
     }
@@ -60,11 +68,8 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
     // MARK: - Supporting
 
     public func mock(_ mock: Mock, path: String = ANYPATH) {
-        mocks[normalized(path)] = mock
-    }
-
-    public func remove(path: String = ANYPATH) {
-        mocks.removeValue(forKey: normalized(path))
+        let path = normalized(path)
+        mocks[path.1 ?? path.0 ?? Self.ANYPATH] = mock
     }
 
     public func reset() {
@@ -78,7 +83,11 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
         if mocks.isEmpty {
             return parent.data(for: request)
         }
-        if let path = request.url?.absoluteString, let mock = mocks[normalized(path)] {
+        let paths = normalized(request.url?.absoluteString)
+        if let path = paths.0, let mock = mocks[path] {
+            return publisher(for: mock, path: path)
+        }
+        if let path = paths.1, let mock = mocks[path] {
             return publisher(for: mock, path: path)
         }
         if let mock = mocks[Self.ANYPATH] {
@@ -107,16 +116,22 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
     }
 
     // this exists due to randomization of query item elements when absoluteString builds
-    public func normalized(_ path: String) -> String {
+    public func normalized(_ path: String?) -> (String?, String?) {
+        guard var path = path else {
+            return (nil, nil)
+        }
+        if let base = base?.absoluteString, path.hasPrefix(base) {
+            path = String(path.dropFirst(base.count))
+        }
         let comp = path.components(separatedBy: "?")
         if comp.count == 1 {
-            return path
+            return (path, nil)
         }
         let items = comp[1]
             .components(separatedBy: "&")
             .sorted()
             .joined(separator: "&")
-        return comp[0] + "?" + items
+        return (comp[0], comp[0] + "?" + items)
     }
 
 }
@@ -124,7 +139,7 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 extension URLSessionManager {
 
     /// Allows user to reach into interceptor chain to configure a single mock.
-    public var mock: URLRequestInterceptorMock? {
+    public var mocks: URLRequestInterceptorMock? {
         find(URLRequestInterceptorMock.self)
     }
 
