@@ -21,6 +21,16 @@ extension URLRequestInterceptor {
         parent.base
     }
 
+    ///  Default handler returns encoder from parent in interceptor chain.
+    public var defaultEncoder: DataEncoder {
+        parent.defaultEncoder
+    }
+
+    ///  Default handler returns decoder from parent in interceptor chain.
+    public var defaultDecoder: DataDecoder {
+        parent.defaultDecoder
+    }
+
     /// Default handler returns request from parent in interceptor chain.
     public func request(forURL url: URL?) -> URLRequestBuilder {
         URLRequestBuilder(manager: self, builder: parent.request(forURL: url))

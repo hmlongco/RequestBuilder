@@ -13,6 +13,10 @@ public protocol URLSessionManager: AnyObject {
     // base
     var base: URL? { get }
 
+    // codable
+    var defaultEncoder: DataEncoder { get }
+    var defaultDecoder: DataDecoder { get }
+
     // request support
     func request(forURL url: URL?) -> URLRequestBuilder
     func data(for request: URLRequest) -> AnyPublisher<(Any?, HTTPURLResponse?), Error>

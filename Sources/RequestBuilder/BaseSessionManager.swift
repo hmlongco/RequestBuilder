@@ -13,12 +13,25 @@ public class BaseSessionManager: URLSessionManager {
     public var base: URL?
     public var session: URLSession
 
+    public lazy var defaultEncoder: DataEncoder = JSONEncoder()
+    public lazy var defaultDecoder: DataDecoder = JSONDecoder()
+
     public var parent: URLSessionManager!
 
     /// Initializes session manager with base URL and configured URLSession.
     public init(base url: URL?, session: URLSession) {
         self.session = session
         self.base = url
+    }
+
+    public func set(defaultEncoder: DataEncoder) -> Self {
+        self.defaultEncoder = defaultEncoder
+        return self
+    }
+
+    public func set(defaultDecoder: DataDecoder) -> Self {
+        self.defaultDecoder = defaultDecoder
+        return self
     }
 
     /// Returns a builder for construction using URL provided.

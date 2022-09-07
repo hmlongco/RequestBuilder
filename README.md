@@ -1,24 +1,31 @@
-# RequestBuilder
+# RequestBuilder for Combine
 
-A lightweight but powerful URLSession/URLRequest Builder implementation for Combine.
+A lightweight but powerful URLSession/URLRequest Builder implementation. This version is derived from the original RxSwift request builder cencept found in the [Builder](https://github.com/hmlongco/Builder) demo application and has been explicitly designed for use in modern SwiftUI applications.
+
+The RequestBuilder library consists of three main components: session managers, request builders, and request interceptors. It's also designed to make data *mocking* simple, easy, and painless.
 
 ### Session Manager
 
-Session Managers bind a base URL to a specific URLSession.
+Session Managers have a single purpose: To bind a base URL to a specific URLSession. They're defined by the `URLSessionManager` protocol, but in most cases you can just use the handy `BaseSessionManager` provided by RequestBuilder.
 
 ```swift
 let base = URL(string: "https://randomuser.me/api")
 let session = URLSession(configuration: URLSessionConfiguration.ephemeral)
 let sessionManager = BaseSessionManager(base: base, session: session)
 ```
-
+Session managers also let you define the default encoders and decoders used by the builder functions.
+```swift
+let sessionManager = BaseSessionManager(base: base, session: session)
+    .set(defaultDecoder: myCustomDecoder)
+    .set(defaultEncoder: myCustomEncoder))
+```
 Once you have a session manager, you can use it to build a request and fetch information from the associated host server.
 
 ### Request Builders
 
 The Builder pattern makes it easy to build requests and then immediately proceed into decoding, processing, and then returning the desired data from the session's dataTaskPubliser.
 
-Just add the required path to the base, add query parameters or form or JSON data for the body, then request the data.
+Just add the required path to the base, add query parameters or form or JSON data for the body, then request the data. Here's a sample:
 
 ```swift
 struct UserService {
@@ -26,14 +33,14 @@ struct UserService {
         sessionManager.request()
             .add(path: "/")
             .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
-            .data(type: UserResultType.self, decoder: JSONDecoder())
+            .data(type: UserResultType.self)
             .map { $0.results }
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 }
 ```
-With our decoded data in hand we mapped the array of users from the `UserResultType`, made sure we were on the main thread, and then returned.
+This particular generic data function decodes our data into a `UserResultType`. Now it's a piece of cake to map out the array of users, make sure we're on the main thread, and then return.
 
 ### Data
 
@@ -112,11 +119,13 @@ This can dramtically increase your code coverage by actually testing more of the
 
 ### Installation
 
-This is a BETA version of RequestBuilder. At this point in time it's only available as a Swift Package.
+This is a **BETA** version of RequestBuilder. Most of the bits and pieces are nailed down and a lot of the rough edges have been filed off, but I make no guarantees that I won't see a better way to accomplish something and start moving things around.
+
+As such, RequestBuilder is currently only available as a Swift Package.
 
 ### License
 
-Factory is available under the MIT license. See the LICENSE file for more info.
+RequestBuilder is available under the MIT license. See the LICENSE file for more info.
 
 ### Author
 

@@ -102,8 +102,9 @@ public struct URLRequestBuilder {
 
     /// Given an encodable data type, sets the request body to the encoded data.
     @discardableResult
-    public func body<DataType:Encodable>(encode data: DataType, encoder: DataEncoder) -> Self {
-        map {
+    public func body<DataType:Encodable>(encode data: DataType, encoder: DataEncoder? = nil) -> Self {
+        let encoder = encoder ?? manager.defaultEncoder
+        return map {
             $0.add(value:"application/json", forHeader: "Content-Type")
             $0.request.httpBody = try? encoder.encode(data)
         }
@@ -159,12 +160,12 @@ extension URLRequestBuilder {
     }
 
     /// Fetches requested data from the session manager and decodes it into the provided type.
-    public func data<T:Decodable>(type: T.Type, decoder: DataDecoder) -> AnyPublisher<T, Error> {
-        manager.data(for: request)
+    public func data<T:Decodable>(type: T.Type, decoder: DataDecoder? = nil) -> AnyPublisher<T, Error> {
+        let decoder = decoder ?? manager.defaultDecoder
+        return manager.data(for: request)
             .tryMap { (data, response) -> T in
                 if let data = data as? Data {
                     do {
-                        let e = JSONEncoder()
                         return try decoder.decode(type, from: data)
                     } catch {
                         throw error
