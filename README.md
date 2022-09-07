@@ -1,10 +1,10 @@
 # RequestBuilder
 
-A lightweight but powerful URLRequest Builder implementation for Combine.
+A lightweight but powerful URLSession/URLRequest Builder implementation for Combine.
 
 ### Session Manager
 
-A Session Manager binds a base URL to a specific URLSession.
+Session Managers bind a base URL to a specific URLSession.
 
 ```swift
 let base = URL(string: "https://randomuser.me/api")
@@ -18,20 +18,26 @@ Once you have a session manager, you can use it to build a request and fetch inf
 
 The Builder pattern makes it easy to build requests and then immediately proceed into decoding, processing, and then returning the desired data from the session's dataTaskPubliser.
 
+Just add the required path to the base, add query parameters or form or JSON data for the body, then request the data.
+
 ```swift
-public func list() -> AnyPublisher<[User], Error> {
-    sessionManager.request()
-        .add(path: "/")
-        .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
-        .data(type: UserResultType.self, decoder: JSONDecoder())
-        .map { $0.results }
-        .receive(on: DispatchQueue.main)
-        .eraseToAnyPublisher()
+struct UserService {
+    public func list() -> AnyPublisher<[User], Error> {
+        sessionManager.request()
+            .add(path: "/")
+            .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
+            .data(type: UserResultType.self, decoder: JSONDecoder())
+            .map { $0.results }
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
+    }
 }
 ```
-The return type from `data(type:decoder:)` is a Combine `AnyPublisher<T, Error>`. And, as you can see, once you have a Combine publisher you can pretty much perform any operation you wish.
+With our decoded data in hand we mapped the array of users from the `UserResultType`, made sure we were on the main thread, and then returned.
 
-Need to just grab some raw data?
+### Data
+
+Just need to grab the raw data? Or use a bespoke URL?
 ```swift
 func image(for path: String) -> AnyPublisher<UIImage?, Never> {
     sessionManager.request(forURL: URL(string: path))
@@ -46,12 +52,12 @@ We've got you covered.
 
 ### Interceptors
 
-Session Managers and Builders are pretty cool, but the entire concept really moves into overdrive once session manages are coupled with *Interceptors*.
+Session Managers and Builders are pretty cool, but the entire concept really moves into overdrive once session managers are coupled with *Interceptors*.
 
-Interceptors can be used to provide addition "default" data to all of the requests made to a given session, as shown below with the "Headers" interceptor.
+Interceptors are thin wrappers around the session that manipulate the request and response data. They can, for example, be used to provide additional "default" data to all of the requests made to a given session, as shown below with the "Headers" interceptor.
 
 ```swift
-let sessionManager = BaseSessionManager(base: base, session: session)
+let sessionManager1 = BaseSessionManager(base: base, session: session)
     .interceptor(URLRequestInterceptorHeaders([
         "User-Agent": "App(com.example; iOS 15.0.0) Swift 5.5",
         "APP_VERSION": "1.16.0",
@@ -64,7 +70,7 @@ let sessionManager = BaseSessionManager(base: base, session: session)
 Interceptors can also be used to provide a standardized set of services for all requests made, like logging requests and responses to the terminal, or providing a default handler for mapping status codes. 
 
 ```swift
-let sessionManager = BaseSessionManager(base: base, session: session)
+let sessionManager2 = BaseSessionManager(base: base, session: session)
     .interceptor(URLRequestInterceptorMock())
     .interceptor(URLRequestInterceptorLogging(mode: .debug))
     .interceptor(URLRequestInterceptorStatusCodes())
@@ -79,7 +85,7 @@ When `URLRequestInterceptorMock` is added to the mix, Mocking becomes a first-cl
 sessionManager.mocks?.mock(path: "/", data: UserResultType(results: []))
 
 ```
-Execute the above mock code and now when our original `list()` service function is called it will receive a list containing empty data. You could also accomplish the same thing by passing in the raw JSON and use just let the regular decoding process do its work.
+Add the above mock to the list and the next time our original user `list()` service function is called it will receive a list containing empty data. You could also accomplish the same thing by passing in the raw JSON and use just let the regular decoding process do its work.
 ```swift
 session.mocks?.mock(path: "/", json: "{ \"results\": [] }")
 ```
@@ -100,9 +106,9 @@ sessionManager.mocks?.reset()
 ```
 It's that simple.
 
-With RequestBuilder, mocking happens at the bottom layer of the network stack. This makes it easy to do Unit Tests, Integration Tests, or even SwiftUI Previews without having to create extra protocols and inject mock services into your View Models.
+With RequestBuilder, mocking happens at the bottom layer of the network stack. This makes it easy to do unit tests, integration tests, or even SwiftUI Previews without having to create extra protocols and inject mock services into your View Models.
 
-This increases your code coverage by actually testing more of the code that will actually be used in the production application. 
+This can dramtically increase your code coverage by actually testing more of the code that will actually be used in the production application. 
 
 ### Installation
 
