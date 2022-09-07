@@ -21,6 +21,8 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
     public var mocks: [String:Mock] = [:]
     public var parent: URLSessionManager!
 
+    public init() {}
+
     // MARK: - Path Mocking
 
     public func mock(data: Data?, status: Int = 200) {
