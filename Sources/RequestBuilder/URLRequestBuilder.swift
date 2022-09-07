@@ -102,10 +102,10 @@ public struct URLRequestBuilder {
 
     /// Given an encodable data type, sets the request body to the encoded data.
     @discardableResult
-    public func body<DataType:Encodable>(encode data: DataType) -> Self {
+    public func body<DataType:Encodable>(encode data: DataType, encoder: DataEncoder) -> Self {
         map {
             $0.add(value:"application/json", forHeader: "Content-Type")
-            $0.request.httpBody = try? JSONEncoder().encode(data)
+            $0.request.httpBody = try? encoder.encode(data)
         }
     }
 
@@ -164,6 +164,7 @@ extension URLRequestBuilder {
             .tryMap { (data, response) -> T in
                 if let data = data as? Data {
                     do {
+                        let e = JSONEncoder()
                         return try decoder.decode(type, from: data)
                     } catch {
                         throw error
@@ -177,6 +178,13 @@ extension URLRequestBuilder {
     }
 
 }
+
+public protocol DataEncoder {
+    func encode<T>(_ value: T) throws -> Data where T : Encodable
+}
+
+extension JSONEncoder: DataEncoder {}
+extension PropertyListEncoder: DataEncoder {}
 
 public protocol DataDecoder {
     func decode<Item: Decodable>(_ type: Item.Type, from data: Data) throws -> Item
