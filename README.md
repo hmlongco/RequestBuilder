@@ -1,6 +1,6 @@
 # RequestBuilder for Combine
 
-A lightweight but powerful URLSession/URLRequest Builder implementation. This version is derived from the original RxSwift request builder cencept found in the [Builder](https://github.com/hmlongco/Builder) demo application and has been explicitly designed for use in modern SwiftUI applications.
+A lightweight but powerful URLSession/URLRequest Builder implementation. This version is derived from the original RxSwift request builder concept found in the [Builder](https://github.com/hmlongco/Builder) demo application and has been explicitly designed for use in modern SwiftUI applications.
 
 The RequestBuilder library consists of three main components: session managers, request builders, and request interceptors. It's also designed to make data *mocking* simple, easy, and painless.
 
