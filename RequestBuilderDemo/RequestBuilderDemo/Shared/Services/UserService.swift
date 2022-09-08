@@ -20,17 +20,17 @@ struct UserService: UserServiceType {
 
     init() {
         let image = UIImage(named: "User-JQ")?.pngData()
-        session.mocks?.add(path: "/portraits/med/men/16.jpg", data: image)
-        session.mocks?.add(path: "/portraits/men/16.jpg", data: image)
-//        session.mocks?.add(path: "/", json: "{ \"results\": [] }")
-//        session.mocks?.add(path: "/", data: UserResultType(results: []))
-//        session.mocks?.add(path: "/", status: 404)
+        session.mocks?.add(path: "/api/portraits/med/men/16.jpg", data: image)
+        session.mocks?.add(path: "/api/portraits/men/16.jpg", data: image)
+//        session.mocks?.add(path: "/api", json: "{ \"results\": [] }")
+//        session.mocks?.add(path: "/api", data: UserResultType(results: []))
+//        session.mocks?.add(path: "/api", status: 404)
     }
 
     /// Fetches list of users from API
     public func list() -> AnyPublisher<[User], APIError> {
         return session.request()
-            .add(path: "/")
+            .add(path: "/api")
             .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
             .data(type: UserResultType.self, decoder: JSONDecoder())
             .map(\.results)

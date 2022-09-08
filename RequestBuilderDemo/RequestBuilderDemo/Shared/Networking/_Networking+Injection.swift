@@ -12,7 +12,7 @@ import RequestBuilder
 extension Container {
 
     static let sessionManager = Factory<URLSessionManager>(scope: .singleton) {
-        BaseSessionManager(base: URL(string: "https://randomuser.me/api"), session: urlSession())
+        BaseSessionManager(base: URL(string: "https://randomuser.me"), session: urlSession())
             .set(decoder: JSONDecoder())
         #if DEBUG
             .interceptor(URLRequestInterceptorMock())

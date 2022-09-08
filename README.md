@@ -33,7 +33,7 @@ Just add the required path to the base, add query parameters or form or JSON dat
 struct UserService {
     public func list() -> AnyPublisher<[User], Error> {
         sessionManager.request()
-            .add(path: "/")
+            .add(path: "/api")
             .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
             .data(type: UserResultType.self)
             .map { $0.results }
@@ -96,28 +96,28 @@ When `URLRequestInterceptorMock` is added to the mix, Mocking becomes a first-cl
 Remember our original `list()` service function from above? Just add the following mock to the list and the next time it's called you'll receive a list containing empty data. 
 ```swift
 sessionManager.mock {
-    $0.add(path: "/", data: UserResultType(results: []))
+    $0.add(path: "/api", data: UserResultType(results: []))
 }
 ```
 You could also accomplish the same thing by passing in the raw JSON and just let the regular decoding process do its work.
 ```swift
 sessionManager.mock {
-    $0.add(path: "/", json: "{ \"results\": [] }")
+    $0.add(path: "/api", json: "{ \"results\": [] }")
 }
 ```
 Need to mock some image data?
 ```swift
 sessionManager.mock {
     let image = UIImage(named: "User-JQ")?.pngData()
-    $0.add(path: "/portraits/med/men/16.png", data: image)
+    $0.add(path: "/api/portraits/med/men/16.png", data: image)
 }
 ```
 
 Want to test your view model's error handling? Try one of the following:
 ```swift
 sessionManager.mock {
-    $0.add(path: "/", error: MyError.connection)
-    $0.add(path: "/", status: 401)
+    $0.add(path: "/api", error: MyError.connection)
+    $0.add(path: "/api", status: 401)
 }
 ```
 Want to reset everything back to normal?
