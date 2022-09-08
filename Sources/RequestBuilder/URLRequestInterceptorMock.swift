@@ -25,49 +25,49 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     // MARK: - Path Mocking
 
-    public func mock(data: Data?, status: Int = 200) {
-        mock(.init(status: status, data: { data }, error: nil))
+    public func add(data: Data?, status: Int = 200) {
+        add(.init(status: status, data: { data }, error: nil))
     }
 
-    public func mock(path: String, data: Data?, status: Int = 200) {
-        mock(.init(status: status, data: { data }, error: nil), path: path)
+    public func add(path: String, data: Data?, status: Int = 200) {
+        add(.init(status: status, data: { data }, error: nil), path: path)
     }
 
-    public func mock<T>(data: @escaping @autoclosure () -> T, status: Int = 200) {
-        mock(.init(status: status, data: data, error: nil))
+    public func add<T>(data: @escaping @autoclosure () -> T, status: Int = 200) {
+        add(.init(status: status, data: data, error: nil))
     }
 
-    public func mock<T>(path: String, data: @escaping @autoclosure () -> T, status: Int = 200) {
-        mock(.init(status: status, data: data, error: nil), path: path)
+    public func add<T>(path: String, data: @escaping @autoclosure () -> T, status: Int = 200) {
+        add(.init(status: status, data: data, error: nil), path: path)
     }
 
-    public func mock(error: Error, status: Int = 999) {
-        mock(.init(status: status, data: { nil }, error: error))
+    public func add(error: Error, status: Int = 999) {
+        add(.init(status: status, data: { nil }, error: error))
     }
 
-    public func mock(path: String, error: Error, status: Int = 999) {
-        mock(.init(status: status, data: { nil }, error: error), path: path)
+    public func add(path: String, error: Error, status: Int = 999) {
+        add(.init(status: status, data: { nil }, error: error), path: path)
     }
 
-    public func mock(json: String, status: Int = 200) {
-        mock(.init(status: status, data: {  json.data(using: .utf8) }, error: nil))
+    public func add(json: String, status: Int = 200) {
+        add(.init(status: status, data: {  json.data(using: .utf8) }, error: nil))
     }
 
-    public func mock(path: String, json: String, status: Int = 200) {
-        mock(.init(status: status, data: { json.data(using: .utf8) }, error: nil), path: path)
+    public func add(path: String, json: String, status: Int = 200) {
+        add(.init(status: status, data: { json.data(using: .utf8) }, error: nil), path: path)
     }
 
-    public func mock(status: Int) {
-        mock(.init(status: status, data: { Data() }, error: nil))
+    public func add(status: Int) {
+        add(.init(status: status, data: { Data() }, error: nil))
     }
 
-    public func mock(path: String, status: Int) {
-        mock(.init(status: status, data: { Data() }, error: nil), path: path)
+    public func add(path: String, status: Int) {
+        add(.init(status: status, data: { Data() }, error: nil), path: path)
     }
 
     // MARK: - Supporting
 
-    public func mock(_ mock: Mock, path: String = ANYPATH) {
+    public func add(_ mock: Mock, path: String = ANYPATH) {
         let path = normalized(path)
         mocks[path.1 ?? path.0 ?? Self.ANYPATH] = mock
     }
@@ -144,7 +144,7 @@ extension URLSessionManager {
     }
 
     /// Allows user to reach into interceptor chain to configure a set of mocks.
-    public func mock(configuration: (_ mock: URLRequestInterceptorMock) -> Void) {
+    public func add(configuration: (_ mock: URLRequestInterceptorMock) -> Void) {
         if let interceptor = find(URLRequestInterceptorMock.self) {
             configuration(interceptor)
         }

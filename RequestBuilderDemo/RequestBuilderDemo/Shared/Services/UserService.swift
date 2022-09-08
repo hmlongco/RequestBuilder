@@ -20,11 +20,11 @@ struct UserService: UserServiceType {
 
     init() {
         let image = UIImage(named: "User-JQ")?.pngData()
-        session.mocks?.mock(path: "/portraits/med/men/16.jpg", data: image)
-        session.mocks?.mock(path: "/portraits/men/16.jpg", data: image)
-//        session.mocks?.mock(path: "/", json: "{ \"results\": [] }")
-//        session.mocks?.mock(path: "/", data: UserResultType(results: []))
-//        session.mocks?.mock(path: "/", status: 404)
+        session.mocks?.add(path: "/portraits/med/men/16.jpg", data: image)
+        session.mocks?.add(path: "/portraits/men/16.jpg", data: image)
+//        session.mocks?.add(path: "/", json: "{ \"results\": [] }")
+//        session.mocks?.add(path: "/", data: UserResultType(results: []))
+//        session.mocks?.add(path: "/", status: 404)
     }
 
     /// Fetches list of users from API
