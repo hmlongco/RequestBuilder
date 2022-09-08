@@ -13,7 +13,7 @@ extension Container {
 
     static let sessionManager = Factory<URLSessionManager>(scope: .singleton) {
         BaseSessionManager(base: URL(string: "https://randomuser.me/api"), session: urlSession())
-            .set(defaultDecoder: JSONDecoder())
+            .set(decoder: JSONDecoder())
         #if DEBUG
             .interceptor(URLRequestInterceptorMock())
             .interceptor(URLRequestInterceptorLogging(mode: .debug))

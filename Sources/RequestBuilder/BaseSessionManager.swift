@@ -13,8 +13,8 @@ public class BaseSessionManager: URLSessionManager {
     public var base: URL?
     public var session: URLSession
 
-    public lazy var defaultEncoder: DataEncoder = JSONEncoder()
-    public lazy var defaultDecoder: DataDecoder = JSONDecoder()
+    public lazy var encoder: DataEncoder = JSONEncoder()
+    public lazy var decoder: DataDecoder = JSONDecoder()
 
     public var parent: URLSessionManager!
 
@@ -24,13 +24,13 @@ public class BaseSessionManager: URLSessionManager {
         self.base = url
     }
 
-    public func set(defaultEncoder: DataEncoder) -> Self {
-        self.defaultEncoder = defaultEncoder
+    public func set(encoder: DataEncoder) -> Self {
+        self.encoder = encoder
         return self
     }
 
-    public func set(defaultDecoder: DataDecoder) -> Self {
-        self.defaultDecoder = defaultDecoder
+    public func set(decoder: DataDecoder) -> Self {
+        self.decoder = decoder
         return self
     }
 

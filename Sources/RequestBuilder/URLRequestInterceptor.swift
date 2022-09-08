@@ -22,13 +22,13 @@ extension URLRequestInterceptor {
     }
 
     ///  Default handler returns encoder from parent in interceptor chain.
-    public var defaultEncoder: DataEncoder {
-        parent.defaultEncoder
+    public var encoder: DataEncoder {
+        parent.encoder
     }
 
     ///  Default handler returns decoder from parent in interceptor chain.
-    public var defaultDecoder: DataDecoder {
-        parent.defaultDecoder
+    public var decoder: DataDecoder {
+        parent.decoder
     }
 
     /// Default handler returns request from parent in interceptor chain.

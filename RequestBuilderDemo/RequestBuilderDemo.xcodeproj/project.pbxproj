@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C558A0528C978A30063234C /* RequestBuilder in Frameworks */ = {isa = PBXBuildFile; productRef = 4C558A0428C978A30063234C /* RequestBuilder */; };
 		4CD7676B28C8225A00CFCF62 /* RequestBuilderDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD7676A28C8225A00CFCF62 /* RequestBuilderDemoApp.swift */; };
 		4CD7676D28C8225A00CFCF62 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD7676C28C8225A00CFCF62 /* ContentView.swift */; };
 		4CD7676F28C8225B00CFCF62 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CD7676E28C8225B00CFCF62 /* Assets.xcassets */; };
@@ -34,7 +35,6 @@
 		4CD767C428C85FE900CFCF62 /* Combine+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD767B928C85FE900CFCF62 /* Combine+Extensions.swift */; };
 		4CD767C528C85FE900CFCF62 /* Combine+JustError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD767BA28C85FE900CFCF62 /* Combine+JustError.swift */; };
 		4CD767C828C8601C00CFCF62 /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 4CD767C728C8601C00CFCF62 /* Factory */; };
-		4CD767CB28C8606200CFCF62 /* RequestBuilder in Frameworks */ = {isa = PBXBuildFile; productRef = 4CD767CA28C8606200CFCF62 /* RequestBuilder */; };
 		4CD767CE28C860AC00CFCF62 /* _Networking+Injection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD767CD28C860AC00CFCF62 /* _Networking+Injection.swift */; };
 /* End PBXBuildFile section */
 
@@ -94,7 +94,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4CD767CB28C8606200CFCF62 /* RequestBuilder in Frameworks */,
+				4C558A0528C978A30063234C /* RequestBuilder in Frameworks */,
 				4CD767C828C8601C00CFCF62 /* Factory in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -315,7 +315,7 @@
 			name = RequestBuilderDemo;
 			packageProductDependencies = (
 				4CD767C728C8601C00CFCF62 /* Factory */,
-				4CD767CA28C8606200CFCF62 /* RequestBuilder */,
+				4C558A0428C978A30063234C /* RequestBuilder */,
 			);
 			productName = RequestBuilderDemo;
 			productReference = 4CD7676728C8225A00CFCF62 /* RequestBuilderDemo.app */;
@@ -807,14 +807,14 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4C558A0428C978A30063234C /* RequestBuilder */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RequestBuilder;
+		};
 		4CD767C728C8601C00CFCF62 /* Factory */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 4CD767C628C8601C00CFCF62 /* XCRemoteSwiftPackageReference "Factory" */;
 			productName = Factory;
-		};
-		4CD767CA28C8606200CFCF62 /* RequestBuilder */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = RequestBuilder;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

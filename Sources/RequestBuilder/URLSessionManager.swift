@@ -14,8 +14,8 @@ public protocol URLSessionManager: AnyObject {
     var base: URL? { get }
 
     // codable
-    var defaultEncoder: DataEncoder { get }
-    var defaultDecoder: DataDecoder { get }
+    var encoder: DataEncoder { get }
+    var decoder: DataDecoder { get }
 
     // request support
     func request(forURL url: URL?) -> URLRequestBuilder

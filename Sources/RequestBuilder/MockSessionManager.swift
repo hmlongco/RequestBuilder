@@ -12,8 +12,8 @@ public class MockSessionManager: URLSessionManager {
 
     public var base: URL?
     
-    public lazy var defaultEncoder: DataEncoder = JSONEncoder()
-    public lazy var defaultDecoder: DataDecoder = JSONDecoder()
+    public lazy var encoder: DataEncoder = JSONEncoder()
+    public lazy var decoder: DataDecoder = JSONDecoder()
 
     private var data: Any?
     private let error: Error?
