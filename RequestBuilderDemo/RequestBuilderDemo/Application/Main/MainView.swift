@@ -17,7 +17,8 @@ struct MainView: View {
         case .loading:
             StandardLoadingView()
                 .onAppear {
-                    viewModel.load()
+                    viewModel.asyncLoad()
+//                    viewModel.load()
                 }
 
         case .loaded(let users):

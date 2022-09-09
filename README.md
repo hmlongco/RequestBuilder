@@ -1,4 +1,4 @@
-# URLRequestBuilder for Swift/Combine
+# URLRequestBuilder for Swift Combine & Async/Await
 
 A lightweight but powerful URLSession/URLRequest Builder implementation. This version is derived from the original RxSwift request builder concept found in the [Builder](https://github.com/hmlongco/Builder) demo application and has been explicitly designed for use in modern SwiftUI applications.
 
@@ -37,7 +37,6 @@ struct UserService {
             .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
             .data(type: UserResultType.self)
             .map { $0.results }
-            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 }
@@ -58,6 +57,30 @@ func image(for path: String) -> AnyPublisher<UIImage?, Never> {
 }
 ```
 We've got you covered.
+
+### Async/Await
+
+If prefer async/await over Combine then don't worry, RequestBuilder has you covered there as well. 
+
+Let's take a look at our original user list service function reimplemented for async/await.
+
+```swift
+struct UserService {
+    public func list() async throws -> [User] {
+        return try await session.request()
+            .add(path: "/api")
+            .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
+            .data(type: UserResultType.self, decoder: JSONDecoder())
+            .map(\.results)
+            .async()
+    }
+}
+```
+Other than the obvious change to the function signature, the builder structure is identical right up to the point where have our mapped result. 
+
+But instead of using `eraseToAnyPublisher()` to convert our result to `AnyPublisher`, we instead use the provided `async()` function to convert it to a throwing asynchronous call.
+
+If you examine `MainViewModel` in the demo app you'll see two different examples of calling `UserService` using both Combine and Async/Await.
 
 ### Interceptors
 

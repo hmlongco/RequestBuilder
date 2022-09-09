@@ -27,8 +27,10 @@ class MainViewModel: ObservableObject {
     func load() {
         state = .loading
         service.list()
+            .receive(on: DispatchQueue.main)
             .map {
-                $0.sorted(by: { ($0.name.last + $0.name.first).localizedLowercase < ($1.name.last + $1.name.first).localizedLowercase })
+                $0.sorted(by: { ($0.name.last + $0.name.first).localizedLowercase
+                    < ($1.name.last + $1.name.first).localizedLowercase })
             }
             .sink(receiveCompletion: { [weak self] completion in
                 switch completion {
@@ -45,6 +47,25 @@ class MainViewModel: ObservableObject {
                 }
             })
             .store(in: &cancellables)
+    }
+
+    @MainActor
+    func asyncLoad() {
+        state = .loading
+        Task {
+            do {
+                let users = try await service.list()
+                if users.isEmpty {
+                    state = .empty("No current users found...")
+                } else {
+                    let sorted = users.sorted(by: { ($0.name.last + $0.name.first).localizedLowercase
+                        < ($1.name.last + $1.name.first).localizedLowercase })
+                    state = .loaded(sorted)
+                }
+            } catch {
+                state = .error(error.localizedDescription + " Please try again later.")
+            }
+        }
     }
 
     func refresh() {

@@ -68,8 +68,9 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
     // MARK: - Supporting
 
     public func add(_ mock: Mock, path: String = ANYPATH) {
-        let path = normalized(path)
-        mocks[path.1 ?? path.0 ?? Self.ANYPATH] = mock
+        if let path = searchPaths(from: path).first {
+            mocks[path] = mock
+       }
     }
 
     public func reset() {
@@ -80,18 +81,12 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     public func data(for request: URLRequest) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
 #if DEBUG
-        if mocks.isEmpty {
-            return parent.data(for: request)
-        }
-        let paths = normalized(request.url?.absoluteString)
-        if let path = paths.0, let mock = mocks[path] {
-            return publisher(for: mock, path: path)
-        }
-        if let path = paths.1, let mock = mocks[path] {
-            return publisher(for: mock, path: path)
-        }
-        if let mock = mocks[Self.ANYPATH] {
-            return publisher(for: mock, path: "/")
+        if !mocks.isEmpty {
+            for path in searchPaths(from: request.url?.absoluteString) {
+                if let mock = mocks[path] {
+                    return publisher(for: mock, path: path)
+                }
+            }
         }
 #endif
         return parent.data(for: request)
@@ -116,22 +111,22 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
     }
 
     // this exists due to randomization of query item elements when absoluteString builds
-    public func normalized(_ path: String?) -> (String?, String?) {
+    public func searchPaths(from path: String?) -> [String] {
         guard var path = path else {
-            return (nil, nil)
+            return [Self.ANYPATH]
         }
         if let base = base?.absoluteString, path.hasPrefix(base) {
             path = String(path.dropFirst(base.count))
         }
         let comp = path.components(separatedBy: "?")
         if comp.count == 1 {
-            return (path, nil)
+            return [path, Self.ANYPATH]
         }
         let items = comp[1]
             .components(separatedBy: "&")
             .sorted()
             .joined(separator: "&")
-        return (comp[0], comp[0] + "?" + items)
+        return [comp[0] + "?" + items, comp[0], Self.ANYPATH]
     }
 
 }
