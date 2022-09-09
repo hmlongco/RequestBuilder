@@ -27,7 +27,7 @@ Once you've created and saved your session manager, you can then use it to build
 
 The Builder pattern makes it easy to build requests and then immediately proceed into decoding, processing, and then returning the desired data from the session's dataTaskPubliser.
 
-Just add the required path to the base, add query parameters or form or JSON data for the body, then request the data. Here's a sample:
+Just add the required path to the base, add query parameters or form or JSON data for the body, then request the data. Here's a sample using Combine:
 
 ```swift
 struct UserService {
@@ -41,7 +41,7 @@ struct UserService {
     }
 }
 ```
-This particular generic data function decodes our data into a `UserResultType`. Now it's a piece of cake to map out the array of users, make sure we're on the main thread, and then return.
+The data function shown makes the request and then decodes the resulting data into a `UserResultType`. Now it's a piece of cake to map out the array of users, make sure we're on the main thread, and then return.
 
 ### Data
 
@@ -76,7 +76,7 @@ struct UserService {
     }
 }
 ```
-Other than the obvious change to the function signature, the builder structure is identical right up to the point where have our mapped result. 
+Other than the obvious change to the function signature, the builder structure is identical right up to the point where we have our mapped result. 
 
 But instead of using `eraseToAnyPublisher()` to convert our result to `AnyPublisher`, we instead use the provided `async()` function to convert it to a throwing asynchronous call.
 
