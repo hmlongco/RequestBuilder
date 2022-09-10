@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4C558A0528C978A30063234C /* RequestBuilder in Frameworks */ = {isa = PBXBuildFile; productRef = 4C558A0428C978A30063234C /* RequestBuilder */; };
+		4CA223F828CD5A7000944456 /* RequestBuilderDemoMocking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA223F728CD5A7000944456 /* RequestBuilderDemoMocking.swift */; };
 		4CD7676B28C8225A00CFCF62 /* RequestBuilderDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD7676A28C8225A00CFCF62 /* RequestBuilderDemoApp.swift */; };
 		4CD7676D28C8225A00CFCF62 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD7676C28C8225A00CFCF62 /* ContentView.swift */; };
 		4CD7676F28C8225B00CFCF62 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4CD7676E28C8225B00CFCF62 /* Assets.xcassets */; };
@@ -56,6 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4CA223F728CD5A7000944456 /* RequestBuilderDemoMocking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestBuilderDemoMocking.swift; sourceTree = "<group>"; };
 		4CD7676728C8225A00CFCF62 /* RequestBuilderDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RequestBuilderDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CD7676A28C8225A00CFCF62 /* RequestBuilderDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestBuilderDemoApp.swift; sourceTree = "<group>"; };
 		4CD7676C28C8225A00CFCF62 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -196,6 +198,7 @@
 			isa = PBXGroup;
 			children = (
 				4CD7676A28C8225A00CFCF62 /* RequestBuilderDemoApp.swift */,
+				4CA223F728CD5A7000944456 /* RequestBuilderDemoMocking.swift */,
 				4CD7676C28C8225A00CFCF62 /* ContentView.swift */,
 			);
 			path = Application;
@@ -435,6 +438,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CD7676D28C8225A00CFCF62 /* ContentView.swift in Sources */,
+				4CA223F828CD5A7000944456 /* RequestBuilderDemoMocking.swift in Sources */,
 				4CD767A828C85F9F00CFCF62 /* MainView.swift in Sources */,
 				4CD767A428C85F9B00CFCF62 /* DetailsView.swift in Sources */,
 				4CD767A528C85F9B00CFCF62 /* DetailsPhotoView.swift in Sources */,

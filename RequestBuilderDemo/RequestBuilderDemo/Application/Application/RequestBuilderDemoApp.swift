@@ -6,12 +6,21 @@
 //
 
 import SwiftUI
+import Factory
 
 @main
 struct RequestBuilderDemoApp: App {
+
+    init() {
+        #if DEBUG
+        setupMocks()
+        #endif
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
     }
+    
 }

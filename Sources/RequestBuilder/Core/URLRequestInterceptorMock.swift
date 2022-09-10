@@ -21,6 +21,19 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     // MARK: - Path Mocking
 
+    public func add(path: String = ANYPATH, data: Data?, status: Int = 200, headers: [String:String]? = nil) {
+        add(path: path) { request in
+            (data, HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
+        }
+    }
+
+    public func add<T:Encodable>(path: String = ANYPATH, data: T, status: Int = 200, headers: [String:String]? = nil) {
+        let encoded = try? encoder.encode(data)
+        add(path: path) { request in
+            (encoded, HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
+        }
+    }
+
     public func add(path: String = ANYPATH, data: Any?, status: Int = 200, headers: [String:String]? = nil) {
         add(path: path) { request in
             (data, HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
