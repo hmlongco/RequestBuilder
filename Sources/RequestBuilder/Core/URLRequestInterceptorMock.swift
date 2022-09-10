@@ -80,7 +80,7 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
                 .eraseToAnyPublisher()
         }
         // otherwise return optional data and status
-        return Just((mock.data, HTTPURLResponse(url: URL(string: path)!, statusCode: mock.status, httpVersion: nil, headerFields: nil)))
+        return Just((mock.data, HTTPURLResponse(url: URL(string: path)!, statusCode: mock.status, httpVersion: nil, headerFields: mock.headers)))
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }
