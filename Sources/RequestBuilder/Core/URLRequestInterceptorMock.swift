@@ -8,48 +8,20 @@
 import Foundation
 import Combine
 
-public class URLRequestInterceptorMock: URLRequestInterceptor {
+public class URLRequestInterceptorMock: URLRequestInterceptor, URLMocking {
 
     public static let ANYPATH = "*"
 
-    public typealias Mock = (_ request: URLRequest) throws -> (Any?, HTTPURLResponse?)
-
-    public var mocks: [String:Mock] = [:]
+    public var mocks: [String:MockURLResponse] = [:]
     public var parent: URLSessionManager!
 
     public init() {}
 
-    // MARK: - Path Mocking
-
-    public func add(path: String = ANYPATH, data: Any?, status: Int = 200, headers: [String:String]? = nil) {
-        add(path: path) { request in
-            (data, HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
-        }
-    }
-
-    public func add(path: String = ANYPATH, json: String, status: Int = 200, headers: [String:String]? = nil) {
-        add(path: path) { request in
-            (json.data(using: .utf8), HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
-        }
-     }
-
-    public func add(path: String = ANYPATH, status: Int, headers: [String:String]? = nil) {
-        add(path: path) { request in
-            (nil, HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
-        }
-    }
-
-    public func add(path: String = ANYPATH, error: Error) {
-        add(path: path) { request in
-            throw error
-        }
-    }
-
     // MARK: - Supporting
 
-    public func add(path: String, mock: @escaping Mock) {
-        if let path = searchPaths(from: path).first {
-            mocks[path] = mock
+    public func add(path: String, response: @escaping MockURLResponse) {
+        if let path = searchPaths(for: path).first {
+            mocks[path] = response
         }
     }
 
@@ -61,7 +33,7 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     public func data(for request: URLRequest) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
         if !mocks.isEmpty {
-            for path in searchPaths(from: request.url?.absoluteString) {
+            for path in searchPaths(for: request.url?.absoluteString) {
                 if let mock = mocks[path] {
                     return publisher(for: request, mock: mock)
                 }
@@ -72,7 +44,7 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     // MARK: - Helpers
 
-    public func publisher(for request: URLRequest, mock: Mock) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
+    public func publisher(for request: URLRequest, mock: MockURLResponse) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
         do {
             var (data, response) = try mock(request)
             if response == nil, let url = request.url {
@@ -89,7 +61,7 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
     }
 
     // this exists due to randomization of query item elements when absoluteString builds
-    public func searchPaths(from path: String?) -> [String] {
+    public func searchPaths(for path: String?) -> [String] {
         guard var path = path else {
             return [Self.ANYPATH]
         }

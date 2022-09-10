@@ -29,7 +29,7 @@ extension Container {
     }
 
     private static let urlSession = Factory<URLSession>(scope: .singleton) {
-        return URLSession(configuration: URLSessionConfiguration.ephemeral)
+        return URLSession.mock // URLSession(configuration: URLSessionConfiguration.ephemeral)
     }
 
 }
