@@ -4,7 +4,7 @@ A lightweight but powerful URLSession/URLRequest Builder implementation. This ve
 
 The RequestBuilder library consists of three main components: the request builder itself; session managers; and request interceptors. 
 
-RequestBuilder is also designed to make data *mocking* simple, easy, and painless.
+RequestBuilder is also designed to make data *mocking* simple, easy, and painless. This is one of its most powerful features, and it can dramatically can change the way you write unit tests, integration tests, and SwiftUI Previews.
 
 ### Session Manager
 
@@ -70,7 +70,7 @@ struct UserService {
         return try await session.request()
             .add(path: "/api")
             .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
-            .data(type: UserResultType.self, decoder: JSONDecoder())
+            .data(type: UserResultType.self)
             .map(\.results)
             .async()
     }
@@ -140,10 +140,27 @@ Want to test your view model's error handling? Try one of the following:
 ```swift
 sessionManager.mock {
     $0.add(path: "/api", error: MyError.connection)
-    $0.add(path: "/api", status: 401)
+    $0.add(path: "/api?results=50&seed=998&nat=us", status: 401)
 }
 ```
-Want to reset everything back to normal?
+Note the last case illustrates that you can also add url parameters to the path to ensure that you return the right mock for the right query. Order of the parameters doesn't matter, but if you add them you have to include all of them. For example,`?a=1` doesn't' match when the URL actually contains `?a=1&b=2`.
+
+Want to do some sort of conditional logic on the request when it occurs? Or get the data from elsewhere?
+```swift
+sessionManager.mock {
+    $0.add(path: "/api") { request in
+        if let path = request.url?.absoluteString, path.contains("bad") {
+            throw APIError.bad
+        } else if let file = Bundle.main.url(forResource: "data", withExtension: "json") {
+            return (try? Data(contentsOf: file), nil)
+        } else {
+            throw APIError.unknown
+        }
+    }
+}
+```
+
+Finally, want to reset everything back to normal?
 ```swift
 sessionManager.mocks?.reset()
 ```
@@ -153,9 +170,27 @@ With RequestBuilder, mocking happens at the bottom layer of the network stack. T
 
 This can dramtically increase your code coverage by letting you test more of the code that will actually be used in the production application. 
 
+### Encodable
+
+The mocking layer has one other trick up its sleeve. Take another look at the first example shown.
+```swift
+sessionManager.mock {
+    $0.add(path: "/api", data: UserResultType(results: []))
+}
+```
+What's not obvious from this example is that while `UserResultType` is Decodable... it's not *Encodable*.  Confused? Let me explain.
+
+The type must be Decodable in order to be processed and extracted from the response data. That's obvious. But if you look at the actual `User` type you'll see that it and its subtypes use all sorts of weird custom CodingKeys that were a pain to implement but are required just to read the data. 
+ 
+ But it would be even more of a pain to also write all of the *encoders* needed. Esepcially since the only reason we'd be doing so would be in order to mock the actual data type. 
+ 
+ So RequestBuilder has a feature built in that lets you supply the raw type in the mock and then have that type recognized and returned when you call `data(type:)`.
+ 
+ Note that you have to call RequestBuilder's `data(type:)` for this to work. You can't call `data()` and then attempt to do your decoding yourself.
+
 ### Interceptor Configuration
 
-RequestBuilder also allows for easy reconfiguration of any interceptor deep within the chain. Just provide the type you want to mutate. Consider.
+And finally, RequestBuilder also allows for easy reconfiguration of any interceptor deep within the chain. Just provide the type you want to mutate. Consider.
 ```swift
 sessionManager.configure(URLRequestInterceptorHeaders.self) {
     $0.add(token, forHeader: "Authorization")

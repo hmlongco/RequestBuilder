@@ -12,12 +12,7 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     public static let ANYPATH = "*"
 
-    public struct Mock {
-        let data: Any?
-        let status: Int
-        let headers: [String : String]?
-        let error: Error?
-    }
+    public typealias Mock = (_ request: URLRequest) throws -> (Any?, HTTPURLResponse?)
 
     public var mocks: [String:Mock] = [:]
     public var parent: URLSessionManager!
@@ -27,27 +22,35 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
     // MARK: - Path Mocking
 
     public func add(path: String = ANYPATH, data: Any?, status: Int = 200, headers: [String:String]? = nil) {
-        add(path: path, mock: .init(data: data, status: status, headers: headers, error: nil))
+        add(path: path) { request in
+            (data, HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
+        }
     }
 
     public func add(path: String = ANYPATH, json: String, status: Int = 200, headers: [String:String]? = nil) {
-        add(path: path, mock: .init(data: json.data(using: .utf8), status: status, headers: headers, error: nil))
-    }
+        add(path: path) { request in
+            (json.data(using: .utf8), HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
+        }
+     }
 
     public func add(path: String = ANYPATH, status: Int, headers: [String:String]? = nil) {
-        add(path: path, mock: .init(data: Data(), status: status, headers: headers, error: nil))
+        add(path: path) { request in
+            (nil, HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
+        }
     }
 
     public func add(path: String = ANYPATH, error: Error) {
-        add(path: path, mock: .init(data: nil, status: 999, headers: nil, error: error))
+        add(path: path) { request in
+            throw error
+        }
     }
 
     // MARK: - Supporting
 
-    public func add(path: String, mock: Mock) {
+    public func add(path: String, mock: @escaping Mock) {
         if let path = searchPaths(from: path).first {
             mocks[path] = mock
-       }
+        }
     }
 
     public func reset() {
@@ -60,7 +63,7 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
         if !mocks.isEmpty {
             for path in searchPaths(from: request.url?.absoluteString) {
                 if let mock = mocks[path] {
-                    return publisher(for: mock, path: path)
+                    return publisher(for: request, mock: mock)
                 }
             }
         }
@@ -69,20 +72,20 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     // MARK: - Helpers
 
-    // standard return function for mock
-    public func publisher(for mock: Mock, path: String) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
-        // forced errors override anything else...
-        if let error = mock.error {
+    public func publisher(for request: URLRequest, mock: Mock) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
+        do {
+            var (data, response) = try mock(request)
+            if response == nil, let url = request.url {
+                response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "1.0", headerFields: nil)
+            }
+            return Just((data, response))
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        } catch {
             return Just<(Any?, HTTPURLResponse?)>((nil, nil))
-                .tryMap { _ in
-                    throw error
-                }
+                .tryMap { _ in throw error }
                 .eraseToAnyPublisher()
         }
-        // otherwise return optional data and status
-        return Just((mock.data, HTTPURLResponse(url: URL(string: path)!, statusCode: mock.status, httpVersion: nil, headerFields: mock.headers)))
-            .setFailureType(to: Error.self)
-            .eraseToAnyPublisher()
     }
 
     // this exists due to randomization of query item elements when absoluteString builds

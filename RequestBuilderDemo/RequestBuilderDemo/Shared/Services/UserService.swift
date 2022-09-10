@@ -30,6 +30,18 @@ struct UserService: UserServiceType {
 //        session.mocks?.add(path: "/api", data: UserResultType(results: User.users))
 //        session.mocks?.add(path: "/api", status: 404)
 //        session.mocks?.add(status: 401)
+//        session.mocks?.add(error: APIError.connection)
+
+//        session.mocks?.add(path: "/api") { request in
+//            if let path = request.url?.absoluteString, path.contains("bad") {
+//                throw APIError.unknown
+//            } else if let file = Bundle.main.url(forResource: "data", withExtension: "json") {
+//                return (try? Data(contentsOf: file), nil)
+//            } else {
+//                throw APIError.unknown
+//            }
+//        }
+
     }
 
     /// Fetches list of users from API and returns result using Combine publisher
