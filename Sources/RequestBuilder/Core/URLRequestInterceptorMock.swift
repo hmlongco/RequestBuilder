@@ -12,7 +12,7 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     public static let ANYPATH = "*"
 
-    public typealias Mock = (_ request: URLRequest) throws -> (Any?, HTTPURLResponse?)
+    public typealias Mock = (_ request: URLRequest) throws -> (Any?, Int, [String:String]?)
 
     public var mocks: [String:Mock] = [:]
     public var parent: URLSessionManager!
@@ -23,32 +23,32 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     public func add(path: String = ANYPATH, data: Data?, status: Int = 200, headers: [String:String]? = nil) {
         add(path: path) { request in
-            (data, HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
+            (data, status, headers)
         }
     }
 
     public func add<T:Encodable>(path: String = ANYPATH, data: T, status: Int = 200, headers: [String:String]? = nil) {
         let encoded = try? encoder.encode(data)
         add(path: path) { request in
-            (encoded, HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
+            (encoded, status, headers)
         }
     }
 
     public func add(path: String = ANYPATH, data: Any?, status: Int = 200, headers: [String:String]? = nil) {
         add(path: path) { request in
-            (data, HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
+            (data, status, headers)
         }
     }
 
     public func add(path: String = ANYPATH, json: String, status: Int = 200, headers: [String:String]? = nil) {
         add(path: path) { request in
-            (json.data(using: .utf8), HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
+            (json.data(using: .utf8), status, headers)
         }
      }
 
     public func add(path: String = ANYPATH, status: Int, headers: [String:String]? = nil) {
         add(path: path) { request in
-            (nil, HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: "1.0", headerFields: headers))
+            (nil, status, headers)
         }
     }
 
@@ -87,10 +87,11 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     public func publisher(for request: URLRequest, mock: Mock) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
         do {
-            var (data, response) = try mock(request)
-            if response == nil, let url = request.url {
-                response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "1.0", headerFields: nil)
+            guard let url = request.url else {
+                throw URLError(.badURL)
             }
+            let (data, status, headers) = try mock(request)
+            let response = HTTPURLResponse(url: url, statusCode: status, httpVersion: "1.0", headerFields: headers)
             return Just((data, response))
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
@@ -101,7 +102,8 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
         }
     }
 
-    // this exists due to randomization of query item elements when absoluteString builds
+    // this exists primarily due to randomization of query item elements when absoluteString is built
+    // but it also builds a set of paths with and without query parameters.
     public func searchPaths(from path: String?) -> [String] {
         guard var path = path else {
             return [Self.ANYPATH]
@@ -112,15 +114,16 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
         if let base = base?.absoluteString, path.hasPrefix(base) {
             path = String(path.dropFirst(base.count))
         }
-        let comp = path.components(separatedBy: "?")
-        if comp.count == 1 {
+        let components = path.components(separatedBy: "?")
+        if components.count == 1 {
             return [path, Self.ANYPATH]
         }
-        let items = comp[1]
+        let items = components[1]
             .components(separatedBy: "&")
             .sorted()
             .joined(separator: "&")
-        return [comp[0] + "?" + items, comp[0], Self.ANYPATH]
+        // return path with query parameters, path without query parameters, and wildcard path
+        return [components[0] + "?" + items, components[0], Self.ANYPATH]
     }
 
 }
