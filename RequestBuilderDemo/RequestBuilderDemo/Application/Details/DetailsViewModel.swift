@@ -62,7 +62,7 @@ class DetailsViewModel: ObservableObject {
     // MARK: - Custom Publishers
 
     func photo() -> AnyPublisher<UIImage?, Never> {
-        cache.photo(forUser: user)
+        cache.requestPhoto(forUser: user)
             .filter { $0 != nil }
             .share()
             .eraseToAnyPublisher()

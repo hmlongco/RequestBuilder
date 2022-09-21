@@ -52,7 +52,7 @@ public struct User: Identifiable, Codable, Equatable {
         picture = try? values.decode(UserPicture.self, forKey: .picture)
         nat = try? values.decode(String.self, forKey: .nat)
 
-        id = originalID.value ?? UUID().uuidString
+        id = UUID().uuidString
     }
 
     enum CodingKeys: String, CodingKey {
