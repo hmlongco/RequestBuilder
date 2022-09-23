@@ -41,7 +41,7 @@ struct AboutView: View {
 
                     Divider()
 
-                    Text("This demo application was written in Swift using SwiftUI, Combine, ResultBuilder, and Factory.")
+                    Text("This demo application was written in Swift using SwiftUI, Combine, RequestBuilder, and Factory.")
                         .multilineTextAlignment(.center)
 
                     Divider()

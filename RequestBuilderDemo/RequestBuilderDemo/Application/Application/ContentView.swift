@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var presentAbout = true
+    @State var presentAbout = false
     var body: some View {
         NavigationView {
             MainView()
