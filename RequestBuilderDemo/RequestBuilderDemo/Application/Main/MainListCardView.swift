@@ -21,16 +21,15 @@ struct MainListCardView: View {
         let _ = Self._printChanges()
         HStack(spacing: 12) {
             ZStack {
-                if let image = photo ?? images.existingThumbnail(forUser: user) {
-                    Image(uiImage: image)
+                if let thumbnail = cachedThumbnail() {
+                    Image(uiImage: thumbnail)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                 } else {
                     Image("User-Unknown")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .onReceive(images.requestThumbnail(forUser: user)) {
-                            // print("onReceive \(user.picture?.thumbnail)")
+                        .onReceive(requestThumbnail()) {
                             photo = $0
                         }
                 }
@@ -51,76 +50,16 @@ struct MainListCardView: View {
         }
     }
 
-    func loadThumbnail() -> AnyPublisher<UIImage?, Never> {
+    func cachedThumbnail() -> UIImage? {
+        photo ?? images.existingThumbnail(forUser: user)
+    }
+
+    func requestThumbnail() -> AnyPublisher<UIImage?, Never> {
         images.requestThumbnail(forUser: user)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 
-}
-
-struct MainListCardView2: View {
-
-    let user: User
-
-    @StateObject private var viewModel = MainListCardViewModel()
-
-    var body: some View {
-        let _ = Self._printChanges()
-        HStack {
-            ZStack {
-                Image("User-Unknown")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                if let image = viewModel.photo {
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                }
-            }
-            .frame(width: 50, height: 50)
-            .clipShape(Circle())
-            .onAppear {
-//                print("onAppear \(user.picture?.thumbnail)")
-                viewModel.loadThumbnail(for: user)
-            }
-
-            VStack(alignment: .leading) {
-                Text(user.fullname)
-                    .font(.headline)
-                if let email = user.email {
-                    Text(email)
-                        .foregroundColor(.secondary)
-                        .font(.footnote)
-                }
-                if let thumb = user.picture?.thumbnail, let url = URL(string: thumb), let last = url.lastPathComponent {
-                    Text(last)
-                        .foregroundColor(.secondary)
-                        .font(.footnote)
-                }
-            }
-            Spacer()
-        }
-    }
-}
-
-class MainListCardViewModel: ObservableObject {
-
-    @Published var photo: UIImage?
-
-    private let images = Container.userImageCache()
-    private var cancellable: AnyCancellable?
-
-    func loadThumbnail(for user: User) {
-        guard photo == nil else {
-            return
-        }
-        cancellable = images.requestThumbnail(forUser: user)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { photo in
-                self.photo = photo
-            })
-    }
 }
 
 struct MainListCardView_Previews: PreviewProvider {

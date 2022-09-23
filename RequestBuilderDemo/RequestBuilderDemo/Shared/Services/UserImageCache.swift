@@ -40,14 +40,12 @@ class UserImageCache {
         }
         let key = NSString(string: path)
         if let image = imageCache.object(forKey: key) {
-//            print("cached version of \(path)")
             return Just(image)
                 .eraseToAnyPublisher()
         }
         return image(for: path)
             .handleEvents(receiveOutput: { [weak imageCache] (image) in
                 if let image = image {
-//                    print("caching \(path)")
                     imageCache?.setObject(image, forKey: key)
                 }
             })
@@ -55,14 +53,10 @@ class UserImageCache {
     }
 
     private func image(for path: String) -> AnyPublisher<UIImage?, Never> {
-        print("image for \(path)")
-        //        return URLSession.shared.dataTaskPublisher(for: URL(string: path)!)
-        //            .map(\.data)
         return session.request(forURL: URL(string: path))
             .data()
             .map(UIImage.init)
             .replaceError(with: nil)
-            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 

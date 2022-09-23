@@ -16,9 +16,10 @@ struct MainView: View {
 
         case .loading:
             StandardLoadingView()
+
                 .onAppear {
-                    viewModel.asyncLoad()
-//                    viewModel.load()
+                    viewModel.load() // demo for Combine load
+//                    viewModel.asyncLoad() // demo for async await load
                 }
 
         case .loaded(let users):

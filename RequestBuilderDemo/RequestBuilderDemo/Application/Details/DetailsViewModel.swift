@@ -65,6 +65,7 @@ class DetailsViewModel: ObservableObject {
         cache.requestPhoto(forUser: user)
             .filter { $0 != nil }
             .share()
+            .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
 
