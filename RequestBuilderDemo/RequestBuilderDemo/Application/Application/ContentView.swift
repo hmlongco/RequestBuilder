@@ -8,9 +8,20 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State var presentAbout = true
     var body: some View {
         NavigationView {
             MainView()
+                .toolbar {
+                    Button {
+                        presentAbout.toggle()
+                    } label: {
+                        Image(systemName: "globe")
+                    }
+                }
+                .sheet(isPresented: $presentAbout) {
+                    AboutView(presentAbout: $presentAbout)
+                }
         }
     }
 }

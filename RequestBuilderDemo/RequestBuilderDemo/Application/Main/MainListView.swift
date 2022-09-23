@@ -22,9 +22,9 @@ struct MainListView: View {
                     }
                 }
             }
-            .navigationTitle("RequestBuilder")
         }
-    }
+        .navigationTitle("Active Users")
+   }
 
 }
 
@@ -41,8 +41,8 @@ struct BrokenMainListView: View {
                     MainListCardView(user: user)
                 }
             }
-            .navigationTitle("RequestBuilder")
         }
+        .navigationTitle("Active Users")
     }
 
 }
