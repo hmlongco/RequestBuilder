@@ -27,17 +27,14 @@ class MainViewModel: ObservableObject {
     func load() {
         state = .loading
         service.list()
-            .receive(on: DispatchQueue.main)
             .map {
                 $0.sorted(by: { ($0.name.last + $0.name.first).localizedLowercase
                     < ($1.name.last + $1.name.first).localizedLowercase })
             }
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
-                switch completion {
-                case .failure(let error):
+                if let error = try? completion.error() {
                     self?.state = .error(error.localizedDescription + " Please try again later.")
-                case .finished:
-                    break
                 }
             }, receiveValue: { [weak self] (users) in
                 if users.isEmpty {
