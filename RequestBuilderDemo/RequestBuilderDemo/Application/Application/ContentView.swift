@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Factory
 
 struct ContentView: View {
     @State var presentAbout = false
@@ -13,10 +14,8 @@ struct ContentView: View {
         NavigationView {
             MainView()
                 .toolbar {
-                    Button {
-                        presentAbout.toggle()
-                    } label: {
-                        Image(systemName: "globe")
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button { presentAbout.toggle() } label: { Image(systemName: "globe") }
                     }
                 }
                 .sheet(isPresented: $presentAbout) {

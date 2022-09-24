@@ -31,7 +31,6 @@ struct MainListCardViewWithViewModel: View {
             .frame(width: 50, height: 50)
             .clipShape(Circle())
             .onAppear {
-//                print("onAppear \(user.picture?.thumbnail)")
                 viewModel.loadThumbnail(for: user)
             }
 
