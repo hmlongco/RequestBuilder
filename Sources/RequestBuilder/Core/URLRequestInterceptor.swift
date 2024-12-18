@@ -37,8 +37,8 @@ extension URLRequestInterceptor {
     }
 
     ///  Default handler returns data from parent in interceptor chain.
-    public func data(for request: URLRequest) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
-        parent.data(for: request)
+    public func data(for request: URLRequest) async throws -> (Any?, HTTPURLResponse?) {
+        try await parent.data(for: request)
     }
 
 }

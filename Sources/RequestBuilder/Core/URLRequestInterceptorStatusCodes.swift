@@ -14,15 +14,12 @@ public class URLRequestInterceptorStatusCodes: URLRequestInterceptor {
 
     public init() {}
 
-    public func data(for request: URLRequest) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
-        return parent.data(for: request)
-             .tryMap({ (data, response) in
-                 guard let response, 200..<299 ~= response.statusCode else {
-                     throw URLError(.badServerResponse)
-                 }
-                 return (data, response)
-             })
-            .eraseToAnyPublisher()
+    public func data(for request: URLRequest) async throws -> (Any?, HTTPURLResponse?) {
+        let (data, response) = try await parent.data(for: request)
+        guard let response, 200..<299 ~= response.statusCode else {
+            throw URLError(.badServerResponse)
+        }
+        return (data, response)
     }
-    
+
 }

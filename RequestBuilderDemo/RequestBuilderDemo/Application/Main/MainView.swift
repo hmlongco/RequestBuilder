@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Factory
 
 struct MainView: View {
 
@@ -15,10 +16,19 @@ struct MainView: View {
         switch viewModel.state {
 
         case .loading:
-            StandardLoadingView()
-                .onAppear {
-                    viewModel.load() // call asyncLoad() for async await load
-                }
+            VStack(spacing: 50) {
+                StandardLoadingView()
+                    .onAppear {
+//                        viewModel.combineLoad()
+//                        viewModel.asyncLoadFromAppear()
+                    }
+                    .task(priority: .background) {
+                         await viewModel.asyncLoadFromTask()
+                    }
+//                Button("Cancel") {
+//                    // viewModel.cancellable?.cancel()
+//                }
+            }
 
         case .loaded(let users):
             MainListView(users: users)

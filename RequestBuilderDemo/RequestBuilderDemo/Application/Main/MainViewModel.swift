@@ -20,53 +20,140 @@ class MainViewModel: ObservableObject {
         case error(String)
     }
 
-    @Published private(set) var state = State.loading
+    private var processing = false
 
-    private var cancellables = Set<AnyCancellable>()
+    @Published private(set) var state = State.loading {
+        didSet {
+            print("STATE = \(String(describing: state))")
+        }
+    }
 
-    func load() {
+    deinit {
+        print("MainViewModel DEINIT")
+    }
+
+    public var cancellables = Set<AnyCancellable>()
+
+    func combineLoad() {
         state = .loading
         service.list()
+            .delay(for: .seconds(5), scheduler: RunLoop.main)
             .map {
                 $0.sorted(by: { ($0.name.last + $0.name.first).localizedLowercase
                     < ($1.name.last + $1.name.first).localizedLowercase })
             }
             .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { [weak self] completion in
+            .sink { [weak self] completion in
                 if let error = try? completion.error() {
                     self?.state = .error(error.localizedDescription + " Please try again later.")
                 }
-            }, receiveValue: { [weak self] (users) in
+            } receiveValue: { [weak self] (users) in
                 if users.isEmpty {
-                    self?.state = .empty("No current users found...")
+                    self?.state = .empty("No users found...")
                 } else {
                     self?.state = .loaded(users)
                 }
-            })
-            .store(in: &cancellables)
-    }
-
-    @MainActor
-    func asyncLoad() {
-        state = .loading
-        Task {
-            do {
-                let users = try await service.list()
-                if users.isEmpty {
-                    state = .empty("No current users found...")
-                } else {
-                    let sorted = users.sorted(by: { ($0.name.last + $0.name.first).localizedLowercase
-                        < ($1.name.last + $1.name.first).localizedLowercase })
-                    state = .loaded(sorted)
-                }
-            } catch {
-                state = .error(error.localizedDescription + " Please try again later.")
             }
-        }
+            .store(in: &cancellables)
     }
 
     func refresh() {
         state = .loading
     }
 
+}
+
+extension MainViewModel {
+
+    @MainActor
+    func asyncLoadFromAppear() {
+        state = .loading
+        Task {
+            do {
+                let users = try await asyncLoadProcessSubtask()
+                if users.isEmpty {
+                    state = .empty("No current users found...")
+                } else {
+                    state = .loaded(users)
+                }
+            } catch is CancellationError {
+                // ignore
+            } catch {
+                state = .error(error.localizedDescription + " Please try again later.")
+            }
+        }
+    }
+
+
+//    .task(priority: .background) {
+//        await viewModel.asyncLoadFromTask()
+//    }
+
+    @MainActor
+    func asyncLoadFromTask() async {
+        state = .loading
+        do {
+            let users = try await asyncLoadProcessNonisolated()
+            if users.isEmpty {
+                state = .empty("No current users found...")
+            } else {
+                state = .loaded(users)
+            }
+        } catch is CancellationError {
+            print("cancelled") // ignore
+        } catch {
+            state = .error(error.localizedDescription + " Please try again later.")
+        }
+    }
+
+    private nonisolated func asyncLoadProcessNonisolated() async throws -> [User] {
+        let users = try await service.list()
+        try Task.checkCancellation()
+        return users.sorted { ($0.name.last + $0.name.first).lowercased() < ($1.name.last + $1.name.first).lowercased() }
+    }
+
+    private func asyncLoadProcessSubtask() async throws -> [User] {
+        let users = try await service.list()
+        try Task.checkCancellation()
+        return await Task {
+            users.sorted { ($0.name.last + $0.name.first).lowercased() < ($1.name.last + $1.name.first).lowercased() }
+        }.value
+    }
+
+}
+
+class Tracker {
+    let id: String
+    init(_ id: String) {
+        self.id = id
+        print("Tracker \(id) INITIALIZED")
+    }
+    deinit {
+        print("Tracker \(id) RELEASED")
+    }
+}
+
+
+class CommonViewModel: ObservableObject {
+
+    @Published var users: [User] = []
+
+    let userAPI = UserAPI()
+    var cancellables = Set<AnyCancellable>()
+
+    func load() {
+        userAPI.load()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { users in
+                self.users = users
+            })
+            .store(in: &cancellables)
+    }
+}
+
+struct UserAPI {
+    func load() -> AnyPublisher<[User], Never> {
+        Just<[User]>([])
+            .eraseToAnyPublisher()
+    }
 }

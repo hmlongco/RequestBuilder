@@ -33,13 +33,11 @@ struct UserService: UserServiceType {
 
     /// Fetches list of users from API and returns result using async/await
     public func list() async throws -> [User] {
-        return try await session.request()
+        try await session.request()
             .add(path: "/api")
             .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
             .data(type: UserResultType.self, decoder: JSONDecoder())
-            .map(\.results)
-            .mapAPIErrors()
-            .async()
+            .results
     }
 
 }

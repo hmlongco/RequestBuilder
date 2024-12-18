@@ -41,17 +41,13 @@ public class MockSessionManager: URLSessionManager {
         URLRequestBuilder(manager: self, url: url ?? URL(string: "/"))
     }
 
-    public func data(for request: URLRequest) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
+    public func data(for request: URLRequest) async throws -> (Any?, HTTPURLResponse?) {
         if let data = data {
             let url = request.url ?? URL(string: "/")!
-            return Just((data, HTTPURLResponse(url: url, statusCode: status, httpVersion: nil, headerFields: nil)))
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
+            let response = HTTPURLResponse(url: url, statusCode: status, httpVersion: nil, headerFields: nil)
+            return (data, response)
         }
-        return Just<(Any?, HTTPURLResponse?)>((nil, nil))
-            .setFailureType(to: Error.self)
-            .tryMap { _ in throw self.error ?? URLError(.badServerResponse) }
-            .eraseToAnyPublisher()
+        throw error ?? URLError(.badServerResponse)
     }
 
 }

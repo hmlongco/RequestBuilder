@@ -3,11 +3,10 @@
 //
 
 import Foundation
-import Combine
 
 public struct URLRequestBuilder {
 
-    // Supportrf HTTP methods
+    // Supported HTTP methods
 
     public enum HTTPMethod: String {
         case create
@@ -136,46 +135,6 @@ public struct URLRequestBuilder {
         var request = self
         transform(&request)
         return request
-    }
-
-}
-
-extension URLRequestBuilder {
-
-    /// Raw data feed from session manager
-    public func dataResponse() -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
-        manager.data(for: request)
-    }
-
-    /// Fetches requested data from the session manager.
-    public func data() -> AnyPublisher<Data, Error> {
-        manager.data(for: request)
-            .tryMap { (data, response) -> Data in
-                if let data = data as? Data {
-                    return data
-                }
-                throw URLError(.cannotDecodeContentData)
-            }
-            .eraseToAnyPublisher()
-    }
-
-    /// Fetches requested data from the session manager and decodes it into the provided type.
-    public func data<T:Decodable>(type: T.Type, decoder: DataDecoder? = nil) -> AnyPublisher<T, Error> {
-        let decoder = decoder ?? manager.decoder
-        return manager.data(for: request)
-            .tryMap { (data, response) -> T in
-                if let data = data as? Data {
-                    do {
-                        return try decoder.decode(type, from: data)
-                    } catch {
-                        throw error
-                    }
-                } else if let data = data as? T {
-                    return data // this supports mocking of types without requiring the type to be Encodable
-                }
-                throw URLError(.cannotDecodeContentData)
-            }
-            .eraseToAnyPublisher()
     }
 
 }

@@ -19,7 +19,7 @@ public protocol URLSessionManager: AnyObject {
 
     // request support
     func request(forURL url: URL?) -> URLRequestBuilder
-    func data(for request: URLRequest) -> AnyPublisher<(Any?, HTTPURLResponse?), Error>
+    func data(for request: URLRequest) async throws -> (Any?, HTTPURLResponse?)
 
     // interceptor support
     func interceptor(_ interceptor: URLRequestInterceptor) -> URLSessionManager

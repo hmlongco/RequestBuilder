@@ -72,34 +72,26 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     // MARK: - Interceptor
 
-    public func data(for request: URLRequest) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
+    public func data(for request: URLRequest) async throws -> (Any?, HTTPURLResponse?) {
         if !mocks.isEmpty {
             for path in searchPaths(from: request.url?.absoluteString) {
                 if let mock = mocks[path] {
-                    return publisher(for: request, mock: mock)
+                    return try response(for: request, mock: mock)
                 }
             }
         }
-        return parent.data(for: request)
+        return try await parent.data(for: request)
     }
 
     // MARK: - Helpers
 
-    public func publisher(for request: URLRequest, mock: Mock) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
-        do {
-            guard let url = request.url else {
-                throw URLError(.badURL)
-            }
-            let (data, status, headers) = try mock(request)
-            let response = HTTPURLResponse(url: url, statusCode: status, httpVersion: "1.0", headerFields: headers)
-            return Just((data, response))
-                .setFailureType(to: Error.self)
-                .eraseToAnyPublisher()
-        } catch {
-            return Just<(Any?, HTTPURLResponse?)>((nil, nil))
-                .tryMap { _ in throw error }
-                .eraseToAnyPublisher()
+    public func response(for request: URLRequest, mock: Mock) throws -> (Any?, HTTPURLResponse?) {
+        guard let url = request.url else {
+            throw URLError(.badURL)
         }
+        let (data, status, headers) = try mock(request)
+        let response = HTTPURLResponse(url: url, statusCode: status, httpVersion: "1.0", headerFields: headers)
+        return (data, response)
     }
 
     // this exists primarily due to randomization of query item elements when absoluteString is built

@@ -40,15 +40,9 @@ public class BaseSessionManager: URLSessionManager {
     }
 
     /// Returns requested data and response from session.
-    public func data(for request: URLRequest) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
-        session.dataTaskPublisher(for: request)
-            .map { (data, response) -> (Any?, HTTPURLResponse?) in
-                (data, response as? HTTPURLResponse)
-            }
-            .mapError {
-                $0 as Error
-            }
-            .eraseToAnyPublisher()
+    public func data(for request: URLRequest) async throws -> (Any?, HTTPURLResponse?) {
+        let (data, response) = try await session.data(for: request)
+        return (data, response as? HTTPURLResponse)
     }
 
 }

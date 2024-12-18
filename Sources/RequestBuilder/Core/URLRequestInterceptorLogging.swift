@@ -23,34 +23,26 @@ public class URLRequestInterceptorLogging: URLRequestInterceptor {
         self.mode = mode
     }
 
-    public func data(for request: URLRequest) -> AnyPublisher<(Any?, HTTPURLResponse?), Error> {
-    #if DEBUG
-        let logging = mode != .none
-        let path = request.url?.absoluteString ?? "unknown"
-        return parent.data(for: request)
-            .handleEvents { _ in
-                if logging {
-                    print("REQ: \(path)")
-                }
-            } receiveOutput: { (data, response) in
-                if logging {
-                    let status = response?.statusCode ?? 999
-                    print("\(status): \(path)")
-                }
-            } receiveCompletion: { completion in
-                if logging {
-                    switch completion {
-                    case .failure(let error):
-                        print("ERR: \(path) - \(error.localizedDescription)")
-                    case .finished:
-                        break
-                    }
-                }
+    public func data(for request: URLRequest) async throws -> (Any?, HTTPURLResponse?) {
+        #if DEBUG
+        if mode != .none {
+            let path = request.url?.absoluteString ?? "unknown"
+            print("REQ: \(path)")
+            do {
+                let (data, response) = try await parent.data(for: request)
+                let status = response?.statusCode ?? 999
+                print("\(status): \(path)")
+                return (data, response)
+            } catch {
+                print("ERR: \(path) - \(error.localizedDescription)")
+                throw error
             }
-            .eraseToAnyPublisher()
-    #else
-        return parent.data(for: request)
-    #endif
+        } else {
+            return try await parent.data(for: request)
+        }
+        #else
+        try await parent.data(for: request)
+        #endif
     }
-    
+
 }

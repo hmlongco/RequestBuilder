@@ -42,8 +42,8 @@ struct MainListCardViewWithViewModel: View {
                         .foregroundColor(.secondary)
                         .font(.footnote)
                 }
-                if let thumb = user.picture?.thumbnail, let url = URL(string: thumb), let last = url.lastPathComponent {
-                    Text(last)
+                if let thumb = user.picture?.thumbnail, let url = URL(string: thumb) {
+                    Text(url.lastPathComponent)
                         .foregroundColor(.secondary)
                         .font(.footnote)
                 }

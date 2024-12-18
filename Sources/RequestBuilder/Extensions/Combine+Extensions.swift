@@ -20,7 +20,7 @@ extension Publisher {
                     switch result {
                     case .finished:
                         if finishedWithoutValue {
-                            continuation.resume(throwing: AsyncError.finishedWithoutValue)
+                            continuation.resume(throwing: PublisherAsyncError.finishedWithoutValue)
                         }
                     case let .failure(error):
                         continuation.resume(throwing: error)
@@ -32,6 +32,10 @@ extension Publisher {
                 }
         }
     }
+}
+
+public enum PublisherAsyncError: Error {
+    case finishedWithoutValue
 }
 
 extension Subscribers.Completion {
