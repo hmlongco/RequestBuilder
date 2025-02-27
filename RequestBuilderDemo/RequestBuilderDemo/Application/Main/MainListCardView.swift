@@ -18,10 +18,9 @@ struct MainListCardView: View {
     private let images = Container.userImageCache()
 
     var body: some View {
-        let _ = Self._printChanges()
         HStack(spacing: 12) {
             ZStack {
-                if let thumbnail = cachedThumbnail() {
+                if let thumbnail = existingThumbnail {
                     Image(uiImage: thumbnail)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -29,8 +28,8 @@ struct MainListCardView: View {
                     Image("User-Unknown")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .onReceive(requestThumbnail()) {
-                            photo = $0
+                        .task {
+                            photo = await images.thumbnail(forUser: user)
                         }
                 }
             }
@@ -50,16 +49,9 @@ struct MainListCardView: View {
         }
     }
 
-    func cachedThumbnail() -> UIImage? {
+    var existingThumbnail: UIImage? {
         photo ?? images.existingThumbnail(forUser: user)
     }
-
-    func requestThumbnail() -> AnyPublisher<UIImage?, Never> {
-        images.requestThumbnail(forUser: user)
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
-    }
-
 }
 
 struct MainListCardView_Previews: PreviewProvider {

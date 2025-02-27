@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct GroupedScrollView<Content:View>: View {
-    let content: () -> Content
+    let content: Content
     init(@ViewBuilder _ content: @escaping () -> Content) {
-        self.content = content
+        self.content = content()
     }
     var body: some View {
         ScrollView {
-            content()
+            content
         }
         .background(Color(.systemGroupedBackground))
     }
@@ -22,13 +22,13 @@ struct GroupedScrollView<Content:View>: View {
 
 
 struct GroupedSectionView<Content:View>: View {
-    let content: () -> Content
+    let content: Content
     init(@ViewBuilder _ content: @escaping () -> Content) {
-        self.content = content
+        self.content = content()
     }
     var body: some View {
         LazyVStack {
-            content()
+            content
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
@@ -39,13 +39,13 @@ struct GroupedSectionView<Content:View>: View {
 }
 
 struct GroupedDisclosureView<Content:View>: View {
-    let content: () -> Content
+    let content: Content
     init(@ViewBuilder _ content: @escaping () -> Content) {
-        self.content = content
+        self.content = content()
     }
     var body: some View {
         HStack {
-            content()
+            content
             Spacer()
             Image(systemName: "chevron.right")
                 .foregroundColor(.secondary)

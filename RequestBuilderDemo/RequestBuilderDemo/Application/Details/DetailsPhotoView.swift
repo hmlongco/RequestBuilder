@@ -10,7 +10,7 @@ import Combine
 
 struct DetailsPhotoView: View {
 
-    let photo: AnyPublisher<UIImage?, Never>
+    let photo: UIImage?
     let name: String
 
     @State private var image: UIImage?
@@ -45,18 +45,14 @@ struct DetailsPhotoView: View {
         }
         .frame(maxHeight: 300)
         .background(Color(.lightGray))
-        .onReceive(photo) { image in
-            self.image = image
-        }
     }
 
 }
 
 struct DetailsPhotoView_Previews: PreviewProvider {
-    static var photo = Just(UIImage(named: "User-JQ")).eraseToAnyPublisher()
     static var previews: some View {
         VStack {
-            DetailsPhotoView(photo: photo, name: "Michael Long")
+            DetailsPhotoView(photo: UIImage(named: "User-JQ"), name: "Michael Long")
             Spacer()
         }
     }

@@ -10,6 +10,7 @@ import Factory
 import RequestBuilder
 
 extension Container {
+    @MainActor
     static let userImageCache = Factory(scope: .shared) {
         UserImageCache()
     }

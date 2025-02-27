@@ -5,9 +5,9 @@
 import Foundation
 
 // MARK: - User
-public struct User: Identifiable, Codable, Equatable {
+public struct User: Hashable, Identifiable, Codable, Equatable {
 
-    public let id: String
+    public let id: UUID
 
     let originalID: UserID
     let name: UserName
@@ -21,7 +21,7 @@ public struct User: Identifiable, Codable, Equatable {
     let picture: UserPicture?
     let nat: String?
 
-    init(id: String, originalID: UserID, name: UserName, gender: String?, location: UserLocation?, email: String?, login: UserLogin?, dob: UserDOB?,
+    init(id: UUID, originalID: UserID, name: UserName, gender: String?, location: UserLocation?, email: String?, login: UserLogin?, dob: UserDOB?,
          phone: String?, cell: String?, picture: UserPicture?, nat: String?) {
         self.id = id
         self.originalID = originalID
@@ -52,7 +52,7 @@ public struct User: Identifiable, Codable, Equatable {
         picture = try? values.decode(UserPicture.self, forKey: .picture)
         nat = try? values.decode(String.self, forKey: .nat)
 
-        id = UUID().uuidString
+        id = UUID()
     }
 
     enum CodingKeys: String, CodingKey {
@@ -72,19 +72,19 @@ public struct User: Identifiable, Codable, Equatable {
 
 
 // MARK: - Dob
-public struct UserDOB: Codable, Equatable {
+public struct UserDOB: Hashable, Codable, Equatable {
     let date: String?
     let age: Int?
 }
 
 // MARK: - ID
-public struct UserID: Codable, Equatable {
+public struct UserID: Hashable, Codable, Equatable {
     let name: String?
     let value: String?
 }
 
 // MARK: - Location
-public struct UserLocation: Codable, Equatable {
+public struct UserLocation: Hashable, Codable, Equatable {
     let street: UserStreet?
     let city: String?
     let state: String?
@@ -117,7 +117,7 @@ public struct UserLocation: Codable, Equatable {
     }
 }
 
-public struct UserStreet: Codable, Equatable {
+public struct UserStreet: Hashable, Codable, Equatable {
     let number: String?
     let name: String?
 
@@ -143,7 +143,7 @@ public struct UserStreet: Codable, Equatable {
 }
 
 // MARK: - Login
-public struct UserLogin: Codable, Equatable {
+public struct UserLogin: Hashable, Codable, Equatable {
     let uuid: String?
     let username: String?
     let password: String?
@@ -154,14 +154,14 @@ public struct UserLogin: Codable, Equatable {
 }
 
 // MARK: - Name
-public struct UserName: Codable, Equatable {
+public struct UserName: Hashable, Codable, Equatable {
     let title: String?
     let first: String
     let last: String
 }
 
 // MARK: - Picture
-public struct UserPicture: Codable, Equatable {
+public struct UserPicture: Hashable, Codable, Equatable {
     let large: String?
     let medium: String?
     let thumbnail: String?
@@ -186,7 +186,7 @@ extension User {
 
     static var mockJQ: User {
         return User(
-            id: UUID().uuidString,
+            id: UUID(),
             originalID: UserID(name: "21", value: "21"),
             name: UserName(title: "Mr.", first: "Jonny", last: "Quest"),
             gender: "M",
@@ -203,7 +203,7 @@ extension User {
 
     static var mockTS: User {
         return User(
-            id: UUID().uuidString,
+            id: UUID(),
             originalID: UserID(name: "22", value: "22"),
             name: UserName(title: "Mr.", first: "Tom", last: "Swift"),
             gender: "M",

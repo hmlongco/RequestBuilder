@@ -15,6 +15,8 @@ class DetailsViewModel: ObservableObject {
 
     @Injected(Container.userImageCache) private var cache: UserImageCache
 
+    @Published private(set) var photo: UIImage?
+
     // MARK: - User Information
 
     var fullname: String { user.fullname }
@@ -59,14 +61,11 @@ class DetailsViewModel: ObservableObject {
         self.user = user
     }
 
-    // MARK: - Custom Publishers
+    // MARK: - Image
 
-    func photo() -> AnyPublisher<UIImage?, Never> {
-        cache.requestPhoto(forUser: user)
-            .filter { $0 != nil }
-            .share()
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
+    @MainActor
+    func loadPhoto() async {
+        photo = await cache.photo(forUser: user)
     }
 
 }

@@ -19,6 +19,15 @@ struct UserService: UserServiceType {
 
     @Injected(Container.sessionManager) private var session
 
+    /// Fetches list of users from API and returns result using async/await
+    public func list() async throws -> [User] {
+        try await session.request()
+            .add(path: "/api")
+            .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
+            .data(type: UserResultType.self, decoder: JSONDecoder())
+            .results
+    }
+
     /// Fetches list of users from API and returns result using Combine publisher
     public func list() -> AnyPublisher<[User], APIError> {
         return session.request()
@@ -29,15 +38,6 @@ struct UserService: UserServiceType {
             .mapAPIErrors()
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
-    }
-
-    /// Fetches list of users from API and returns result using async/await
-    public func list() async throws -> [User] {
-        try await session.request()
-            .add(path: "/api")
-            .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
-            .data(type: UserResultType.self, decoder: JSONDecoder())
-            .results
     }
 
 }

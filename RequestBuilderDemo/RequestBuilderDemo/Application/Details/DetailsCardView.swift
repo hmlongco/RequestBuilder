@@ -15,7 +15,10 @@ struct DetailsCardView: View {
     var body: some View {
         DLSClippedCard {
             VStack(spacing: 0) {
-                DetailsPhotoView(photo: viewModel.photo(), name: viewModel.fullname)
+                DetailsPhotoView(photo: viewModel.photo, name: viewModel.fullname)
+                    .task {
+                        await viewModel.loadPhoto()
+                    }
 
                 VStack(spacing: 12) {
                     VStack(spacing: 4) {
