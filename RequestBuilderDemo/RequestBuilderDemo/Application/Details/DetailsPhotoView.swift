@@ -13,12 +13,10 @@ struct DetailsPhotoView: View {
     let photo: UIImage?
     let name: String
 
-    @State private var image: UIImage?
-
     var body: some View {
         ZStack(alignment: .bottom) {
             ZStack {
-                if let image = image {
+                if let image = photo {
                     Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)

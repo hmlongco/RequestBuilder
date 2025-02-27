@@ -9,6 +9,7 @@ import UIKit
 import Factory
 import Combine
 
+@MainActor
 class DetailsViewModel: ObservableObject {
 
     // MARK: - Dependencies
