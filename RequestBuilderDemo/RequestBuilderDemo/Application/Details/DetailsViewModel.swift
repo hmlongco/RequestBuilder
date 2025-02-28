@@ -14,7 +14,7 @@ class DetailsViewModel: ObservableObject {
 
     // MARK: - Dependencies
 
-    @Injected(Container.userImageCache) private var cache: UserImageCache
+    @Injected(\.userImageCache) private var cache: UserImageCache
 
     @Published private(set) var photo: UIImage?
 

@@ -15,7 +15,7 @@ struct MainListCardView: View {
 
     @State private var photo: UIImage?
 
-    private let images = Container.userImageCache()
+    @Injected(\.userImageCache) var images
 
     var body: some View {
         HStack(spacing: 12) {

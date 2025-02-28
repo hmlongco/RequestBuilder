@@ -10,11 +10,10 @@ import Factory
 import RequestBuilder
 
 extension Container {
-    @MainActor
-    static let userImageCache = Factory(scope: .shared) {
-        UserImageCache()
+    var userImageCache: Factory<UserImageCache> {
+        self { UserImageCache() }.shared
     }
-    static let userServiceType = Factory<UserServiceType> {
-        UserService()
+    var userServiceType: Factory<UserServiceType> {
+        self { UserService() }
     }
 }

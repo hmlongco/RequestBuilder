@@ -13,18 +13,21 @@ import RequestBuilder
 @MainActor
 class UserImageCache {
 
-    @Injected(Container.sessionManager) private var session
+    @Injected(\.sessionManager) private var session
 
-    private enum ImageState: Error {
-        case loading(Task<UIImage?, Never>)
-        case loaded(UIImage)
-        case error
+    private var cache: [String: CacheEntry] = [:]
+    private var maxSize: Int
+    private var dropCount: Int
+
+    nonisolated init(maxSize: Int = 100, dropPercentage: Int = 10) {
+        self.maxSize = max(maxSize, 1)
+        self.dropCount = max(maxSize / dropPercentage, 1)
     }
 
-    private var cache = [String : ImageState]()
+    // public interface
 
     func existingThumbnail(forUser user: User) -> UIImage? {
-        guard let path = user.picture?.thumbnail, case let .loaded(image) = cache[path] else {
+        guard let path = user.picture?.thumbnail, let image = findEntry(for: path)?.cachedImage() else {
             return nil
         }
         return image
@@ -44,38 +47,42 @@ class UserImageCache {
         return await image(for: path)
     }
 
+    func cancelAll() {
+        cache.values.forEach { $0.cancel() }
+    }
+
+    // core
+
     private func image(for path: String) async -> UIImage? {
-        if let state = cache[path] {
-            switch state {
-            case .loading(let task):
-                return await task.value
-            case .loaded(let image):
-                return image
-            case .error:
-                break
-            }
+        if let entry = findEntry(for: path) {
+            return await entry.image()
         }
-        guard let url = URL(string: path) else {
-            return nil
+        let entry = CacheEntry(key: path, session: session)
+        addEntry(entry)
+        return await entry.image()
+    }
+
+    // cache management
+
+    private func findEntry(for key: String) -> CacheEntry? {
+        if let entry = cache[key] {
+            return entry
         }
-        let task = Task<UIImage?, Never> {
-            do {
-                let data: Data = try await session.request(forURL: url).data()
-                if let image = UIImage(data: data) {
-                    cache[path] = .loaded(image)
-                    return image
-                } else {
-                    cache[path] = .error
-                    return nil
-                }
-            } catch {
-                // nil if we want to allow for retry
-                cache[path] = .error
-                return nil
-            }
+        return nil
+    }
+
+    private func addEntry(_ entry: CacheEntry) {
+        if cache.count == maxSize {
+            sweepAndRemoveOldestEntries()
         }
-        cache[path] = .loading(task)
-        return await task.value
+        cache[entry.key] = entry
+    }
+
+    private func sweepAndRemoveOldestEntries() {
+        cache.values
+            .sorted { $0.lastReferenced < $1.lastReferenced }
+            .prefix(dropCount)
+            .forEach { cache.removeValue(forKey: $0.key) }
     }
 
     func reset() {
@@ -83,3 +90,97 @@ class UserImageCache {
     }
 
 }
+
+private class CacheEntry {
+
+    let key: String
+
+    private(set) var lastReferenced: Date = .now
+
+    private enum State: Error {
+        case loading(Task<UIImage?, Error>)
+        case loaded(UIImage)
+        case error
+    }
+
+    private var state: State = .error
+
+    init(key: String, session: URLSessionManager) {
+        self.key = key
+        self.state = .loading(Task {
+            let url = try URL.string(key)
+            let data: Data = try await session.request(forURL: url).data()
+            return await UIImage(data: data)?.byPreparingForDisplay()
+        })
+    }
+
+    deinit {
+        cancel()
+    }
+
+    @MainActor
+    func cachedImage() -> UIImage? {
+        if case .loaded(let image) = state {
+            lastReferenced = .now
+            return image
+        }
+        return nil
+    }
+
+    @MainActor
+    func image() async -> UIImage? {
+        lastReferenced = .now
+        switch state {
+        case .loading(let task):
+            if let image = try? await task.value {
+                state = .loaded(image)
+                return image
+            } else {
+                state = .error
+                return nil
+            }
+        case .loaded(let image):
+            return image
+        case .error:
+            return nil
+        }
+    }
+
+    func cancel() {
+        if case let .loading(task) = state {
+            task.cancel()
+            state = .error
+        }
+    }
+
+}
+
+extension URL {
+    static func string(_ string: String) throws -> URL {
+        guard let url = URL(string: string) else {
+            throw URLError(.badURL)
+        }
+        return url
+    }
+}
+
+//    private var cache: [CacheEntry] = []
+//
+//    private func findEntry(for key: String) -> CacheEntry? {
+//        if let index = cache.lastIndex(where: { $0.key == key }) {
+//            let entry = cache[index]
+//            if index < cache.count - 1 {
+//                cache.remove(at: index)
+//                cache.append(entry)
+//            }
+//            return entry
+//        }
+//        return nil
+//    }
+//
+//    private func addEntry(for key: String, entry: CacheEntry) {
+//        if cache.count == maxSize {
+//            cache = Array(cache.dropFirst(dropCount))
+//        }
+//        cache.append(entry)
+//    }

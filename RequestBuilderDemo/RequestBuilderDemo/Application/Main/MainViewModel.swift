@@ -11,7 +11,7 @@ import Factory
 
 class MainViewModel: ObservableObject {
 
-    @Injected(Container.userServiceType) var service: UserServiceType
+    @Injected(\.userServiceType) var service: UserServiceType
 
     enum State: Equatable {
         case loading

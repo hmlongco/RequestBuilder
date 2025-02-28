@@ -11,7 +11,7 @@ import Factory
 extension RequestBuilderDemoApp {
 
     func setupMocks() {
-        let session = Container.sessionManager()
+        let session = Container.shared.sessionManager()
         let image = UIImage(named: "User-JQ")?.pngData()
 
         session.mocks?.add(path: "User-JQ", data: image)

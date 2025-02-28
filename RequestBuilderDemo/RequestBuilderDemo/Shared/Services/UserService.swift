@@ -17,13 +17,13 @@ public protocol UserServiceType {
 
 struct UserService: UserServiceType {
 
-    @Injected(Container.sessionManager) private var session
+    @Injected(\.sessionManager) private var session
 
     /// Fetches list of users from API and returns result using async/await
     public func list() async throws -> [User] {
         try await session.request()
             .add(path: "/api")
-            .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
+            .add(queryItems: ["results" : "75", "seed": "998", "nat": "us"])
             .data(type: UserResultType.self, decoder: JSONDecoder())
             .results
     }
