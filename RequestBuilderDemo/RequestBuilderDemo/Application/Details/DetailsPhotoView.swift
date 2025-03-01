@@ -15,7 +15,7 @@ struct DetailsPhotoView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            ZStack {
+            Group {
                 if let image = photo {
                     Image(uiImage: image)
                         .resizable()

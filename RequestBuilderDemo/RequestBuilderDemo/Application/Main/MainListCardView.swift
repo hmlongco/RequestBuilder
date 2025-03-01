@@ -19,7 +19,7 @@ struct MainListCardView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            ZStack {
+            Group {
                 if let thumbnail = existingThumbnail {
                     Image(uiImage: thumbnail)
                         .resizable()

@@ -8,12 +8,19 @@
 import Foundation
 import Factory
 import RequestBuilder
+import SwiftUI
 
 extension Container {
+
+    @MainActor
     var userImageCache: Factory<UserImageCache> {
-        self { UserImageCache() }.shared
+        self { @MainActor in
+            UserImageCache(cache: MRUDictionaryCacheStrategy<URL, UIImage>())
+        }.shared
     }
+
     var userServiceType: Factory<UserServiceType> {
         self { UserService() }
     }
+
 }

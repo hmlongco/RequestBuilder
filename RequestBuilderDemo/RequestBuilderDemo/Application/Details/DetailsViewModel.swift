@@ -66,6 +66,7 @@ class DetailsViewModel: ObservableObject {
 
     @MainActor
     func loadPhoto() async {
+        guard photo == nil else { return }
         photo = await cache.photo(forUser: user)
     }
 
