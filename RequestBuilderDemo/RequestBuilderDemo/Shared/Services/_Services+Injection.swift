@@ -13,7 +13,9 @@ import SwiftUI
 extension Container {
     
     var userImageCache: Factory<UserImageCache> {
-        self { UserImageCache(cache: MRUDictionaryCacheStrategy<URL, UIImage>()) }.shared
+        self {
+            UserImageCache(cache: AsyncCache(cache: MRUDictionaryCache<URL, UIImage>()))
+        }.shared
     }
 
     var userServiceType: Factory<UserServiceType> {

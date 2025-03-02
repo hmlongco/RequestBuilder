@@ -6,61 +6,58 @@
 //
 
 import Foundation
+import os
 
-public class MRUDictionaryCacheStrategy<Key: Hashable, Value>: AsyncCacheStrategy {
+public class MRUDictionaryCache<Key: Hashable, Value>: CacheStrategy {
 
-    private var cache: [Key: TimestampedCacheEntry<Key, Value>] = [:]
+    private typealias CacheType = Dictionary<Key, Entry>
+
+    private class Entry {
+        let key: Key
+        let value: Value
+        var timestamp: Date = .now
+        init(key: Key, value: Value) {
+            self.key = key
+            self.value = value
+        }
+    }
+
+    private var cache: OSAllocatedUnfairLock<CacheType> = .init(initialState: [:])
     private var maxSize: Int
     private var dropCount: Int
 
     public init(maxSize: Int = 100, dropPercentage: Int = 10) {
         self.maxSize = max(maxSize, 1)
         self.dropCount = max(maxSize / dropPercentage, 1)
-        self.cache.reserveCapacity(maxSize / 2)
     }
 
-    public func findEntry(for key: Key) -> AsyncCacheEntry<Key, Value>? {
-        cache[key]
-    }
-
-    public func newEntry(for key: Key, task: Task<Value?, Error>) -> AsyncCacheEntry<Key, Value> {
-        if cache.count == maxSize {
-            sweepAndRemoveOldestEntries()
+    public func get(_ key: Key) -> Value? {
+        cache.withLock { cache in
+            if let entry = cache[key] {
+                entry.timestamp = .now
+                return entry.value
+            }
+            return nil
         }
-        let entry = TimestampedCacheEntry(key: key, task: task)
-        cache[key] = entry
-        return entry
     }
 
-    internal func sweepAndRemoveOldestEntries() {
-        cache.values
-            .sorted { $0.lastReferenced < $1.lastReferenced }
-            .prefix(dropCount)
-            .forEach { cache.removeValue(forKey: $0.key) }
+    public func set(_ key: Key, value: Value) {
+        cache.withLock { cache in
+            if cache.count == maxSize {
+                // sweep and remove oldest entires
+                cache.values
+                    .sorted { $0.timestamp < $1.timestamp }
+                    .prefix(dropCount)
+                    .forEach { cache.removeValue(forKey: $0.key) }
+            }
+            cache[key] = Entry(key: key, value: value)
+        }
     }
 
     public func reset() {
-        cache = [:]
+        cache.withLock {
+            $0 = [:]
+        }
     }
 
-}
-
-internal class TimestampedCacheEntry<Key: Hashable, Value>: AsyncCacheEntry<Key, Value> {
-
-    private(set) var lastReferenced: Date = .now
-
-    override init(key: Key, task: Task<Value?, Error>) {
-        super.init(key: key, task: task)
-    }
-
-    public override func cachedItem() -> Value? {
-        lastReferenced = .now
-        return super.cachedItem()
-    }
-
-    public override func item() async -> Value? {
-        lastReferenced = .now
-        return await super.item()
-    }
-    
 }

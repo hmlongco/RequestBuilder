@@ -6,37 +6,57 @@
 //
 
 import Foundation
+import os
 
 public protocol AsyncCacheStrategy<Key, Value> {
 
     associatedtype Key: Hashable
     associatedtype Value
 
-    @MainActor func findEntry(for key: Key) -> AsyncCacheEntry<Key, Value>?
-    @MainActor func newEntry(for key: Key, task: Task<Value?, Error>) -> AsyncCacheEntry<Key, Value>
+    @MainActor func currentItem(for key: Key) -> Value?
+    @MainActor func item(for key: Key, factory: @escaping () async throws -> Value?) async -> Value?
 
-    @MainActor func reset()
+    func reset()
 
 }
 
-public class SimpleCacheStrategy<Key: Hashable, Value>: AsyncCacheStrategy {
+public class AsyncCache<Key: Hashable, Value>: AsyncCacheStrategy {
 
-    private var cache: [Key: AsyncCacheEntry<Key, Value>] = [:]
+    private var cache: any CacheStrategy<Key, Value>
+    private var tasks: [Key: Task<Value?, Never>] = [:]
 
-    public init() {}
-
-    public func findEntry(for key: Key) -> AsyncCacheEntry<Key, Value>? {
-        cache[key]
+    public init(cache: any CacheStrategy<Key, Value>) {
+        self.cache = cache
     }
 
-    public func newEntry(for key: Key, task: Task<Value?, Error>) -> AsyncCacheEntry<Key, Value> {
-        let entry = AsyncCacheEntry(key: key, task: task)
-        cache[key] = entry
-        return entry
+    public func currentItem(for key: Key) -> Value? {
+        cache.get(key)
+    }
+
+    public func item(for key: Key, factory: @escaping () async throws -> Value?) async -> Value? {
+        if let item = cache.get(key) {
+            return item
+        }
+
+        if let task = tasks[key] {
+            return await task.value
+        }
+
+        defer { tasks.removeValue(forKey: key) }
+
+        let task = Task<Value?, Never> { try? await factory() }
+        tasks[key] = task
+
+        if let value = await task.value {
+            cache.set(key, value: value)
+            return value
+        }
+
+        return nil
     }
 
     public func reset() {
-        cache = [:]
+        cache.reset()
     }
 
 }

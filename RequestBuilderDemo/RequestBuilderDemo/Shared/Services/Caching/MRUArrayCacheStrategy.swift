@@ -6,42 +6,51 @@
 //
 
 import Foundation
+import os
 
-public class MRUArrayCacheStrategy<Key: Hashable, Value>: AsyncCacheStrategy {
+public class MRUArrayCache<Key: Hashable, Value>: CacheStrategy {
 
-    private var cache: [AsyncCacheEntry<Key, Value>] = []
+    private struct Entry {
+        let key: Key
+        let value: Value
+    }
+
+    private var cache: OSAllocatedUnfairLock<Array<Entry>> = .init(initialState: [])
     private var maxSize: Int
     private var dropCount: Int
 
     public init(maxSize: Int = 100, dropPercentage: Int = 10) {
         self.maxSize = max(maxSize, 1)
         self.dropCount = max(maxSize / dropPercentage, 1)
-        self.cache.reserveCapacity(maxSize / 2)
     }
 
-    public func findEntry(for key: Key) -> AsyncCacheEntry<Key, Value>? {
-        if let index = cache.lastIndex(where: { $0.key == key }) {
-            let entry = cache[index]
-            if index < cache.count - 1 {
-                cache.remove(at: index)
-                cache.append(entry)
+    public func get(_ key: Key) -> Value? {
+        cache.withLock { cache in
+            if let index = cache.lastIndex(where: { $0.key == key }) {
+                let entry = cache[index]
+                if index < cache.count - 1 {
+                    cache.remove(at: index)
+                    cache.append(entry)
+                }
+                return entry.value
             }
-            return entry
+            return nil
         }
-        return nil
     }
 
-    public func newEntry(for key: Key, task: Task<Value?, Error>) -> AsyncCacheEntry<Key, Value> {
-        if cache.count == maxSize {
-            cache = Array(cache.dropFirst(dropCount))
+    public func set(_ key: Key, value: Value) {
+        cache.withLock { cache in
+            if cache.count == maxSize {
+                cache = Array(cache.dropFirst(dropCount))
+            }
+            cache.append(Entry(key: key, value: value))
         }
-        let entry = AsyncCacheEntry(key: key, task: task)
-        cache.append(entry)
-        return entry
     }
 
     public func reset() {
-        cache = []
+        cache.withLock {
+            $0 = []
+        }
     }
 
 }

@@ -24,7 +24,7 @@ class UserImageCache {
 
     @MainActor
     func existingThumbnail(forUser user: User) -> UIImage? {
-        guard let path = user.picture?.thumbnail, let url = URL(string: path), let image = cache.findEntry(for: url)?.cachedItem() else {
+        guard let path = user.picture?.thumbnail, let url = URL(string: path), let image = cache.currentItem(for: url) else {
             return nil
         }
         return image
@@ -55,15 +55,11 @@ class UserImageCache {
 
     @MainActor
     private func image(for url: URL) async -> UIImage? {
-        if let entry = cache.findEntry(for: url) {
-            return await entry.item()
-        }
-        let entry = cache.newEntry(for: url, task: Task {
-            // try await Task.sleep(for: .milliseconds(500))
-            let data: Data = try await session.request(forURL: url).data()
+        await cache.item(for: url) {
+            try await Task.sleep(for: .milliseconds(Int.random(in: 250...750)))
+            let data: Data = try await self.session.request(forURL: url).data()
             return await UIImage(data: data)?.byPreparingForDisplay()
-        })
-        return await entry.item()
+        }
     }
 
 }
