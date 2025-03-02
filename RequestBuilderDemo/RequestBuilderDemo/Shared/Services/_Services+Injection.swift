@@ -11,12 +11,9 @@ import RequestBuilder
 import SwiftUI
 
 extension Container {
-
-    @MainActor
+    
     var userImageCache: Factory<UserImageCache> {
-        self { @MainActor in
-            UserImageCache(cache: MRUDictionaryCacheStrategy<URL, UIImage>())
-        }.shared
+        self { UserImageCache(cache: MRUDictionaryCacheStrategy<URL, UIImage>()) }.shared
     }
 
     var userServiceType: Factory<UserServiceType> {

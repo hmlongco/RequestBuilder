@@ -42,6 +42,9 @@
 		4CD767C828C8601C00CFCF62 /* Factory in Frameworks */ = {isa = PBXBuildFile; productRef = 4CD767C728C8601C00CFCF62 /* Factory */; };
 		4CD767CE28C860AC00CFCF62 /* _Networking+Injection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD767CD28C860AC00CFCF62 /* _Networking+Injection.swift */; };
 		4CE01BF02D736FE500091B61 /* AsyncCacheStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE01BEF2D736FE500091B61 /* AsyncCacheStrategy.swift */; };
+		4CE01BF32D73D31C00091B61 /* AsyncCacheEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE01BF22D73D31C00091B61 /* AsyncCacheEntry.swift */; };
+		4CE01BF72D73D38D00091B61 /* MRUDictionaryCacheStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE01BF62D73D38D00091B61 /* MRUDictionaryCacheStrategy.swift */; };
+		4CE01BF92D73D3AD00091B61 /* MRUArrayCacheStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE01BF82D73D3AD00091B61 /* MRUArrayCacheStrategy.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,6 +102,9 @@
 		4CD767BA28C85FE900CFCF62 /* Combine+JustError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Combine+JustError.swift"; sourceTree = "<group>"; };
 		4CD767CD28C860AC00CFCF62 /* _Networking+Injection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "_Networking+Injection.swift"; sourceTree = "<group>"; };
 		4CE01BEF2D736FE500091B61 /* AsyncCacheStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCacheStrategy.swift; sourceTree = "<group>"; };
+		4CE01BF22D73D31C00091B61 /* AsyncCacheEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCacheEntry.swift; sourceTree = "<group>"; };
+		4CE01BF62D73D38D00091B61 /* MRUDictionaryCacheStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MRUDictionaryCacheStrategy.swift; sourceTree = "<group>"; };
+		4CE01BF82D73D3AD00091B61 /* MRUArrayCacheStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MRUArrayCacheStrategy.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -278,7 +284,7 @@
 			isa = PBXGroup;
 			children = (
 				4CD767AE28C85FE900CFCF62 /* _Services+Injection.swift */,
-				4CE01BEF2D736FE500091B61 /* AsyncCacheStrategy.swift */,
+				4CE01BF12D73D2FA00091B61 /* Caching */,
 				4CD767AF28C85FE900CFCF62 /* UserImageCache.swift */,
 				4CD767AD28C85FE900CFCF62 /* UserService.swift */,
 			);
@@ -329,6 +335,17 @@
 				4CD767CD28C860AC00CFCF62 /* _Networking+Injection.swift */,
 			);
 			path = Networking;
+			sourceTree = "<group>";
+		};
+		4CE01BF12D73D2FA00091B61 /* Caching */ = {
+			isa = PBXGroup;
+			children = (
+				4CE01BF22D73D31C00091B61 /* AsyncCacheEntry.swift */,
+				4CE01BEF2D736FE500091B61 /* AsyncCacheStrategy.swift */,
+				4CE01BF82D73D3AD00091B61 /* MRUArrayCacheStrategy.swift */,
+				4CE01BF62D73D38D00091B61 /* MRUDictionaryCacheStrategy.swift */,
+			);
+			path = Caching;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -470,7 +487,9 @@
 			files = (
 				4CD7676D28C8225A00CFCF62 /* ContentView.swift in Sources */,
 				4C7D648528DB859300E3233F /* SwiftUI+onDidAppear.swift in Sources */,
+				4CE01BF72D73D38D00091B61 /* MRUDictionaryCacheStrategy.swift in Sources */,
 				4CA223F828CD5A7000944456 /* RequestBuilderDemoMocking.swift in Sources */,
+				4CE01BF32D73D31C00091B61 /* AsyncCacheEntry.swift in Sources */,
 				4CD767A828C85F9F00CFCF62 /* MainView.swift in Sources */,
 				4CD767A428C85F9B00CFCF62 /* DetailsView.swift in Sources */,
 				4CD767A528C85F9B00CFCF62 /* DetailsPhotoView.swift in Sources */,
@@ -481,6 +500,7 @@
 				4CD767CE28C860AC00CFCF62 /* _Networking+Injection.swift in Sources */,
 				4CD767BD28C85FE900CFCF62 /* UserImageCache.swift in Sources */,
 				4CD767A928C85F9F00CFCF62 /* MainViewModel.swift in Sources */,
+				4CE01BF92D73D3AD00091B61 /* MRUArrayCacheStrategy.swift in Sources */,
 				4CD767C028C85FE900CFCF62 /* StandardErrorView.swift in Sources */,
 				4CD767BB28C85FE900CFCF62 /* UserService.swift in Sources */,
 				4CD767C428C85FE900CFCF62 /* Combine+Extensions.swift in Sources */,
