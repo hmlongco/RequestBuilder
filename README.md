@@ -1,4 +1,4 @@
-# URLRequestBuilder for Swift Combine & Async/Await
+# URLRequestBuilder for Swift Async/Await & Combine
 
 A lightweight but powerful URLSession/URLRequest Builder implementation. This version is derived from the original RxSwift request builder concept found in the [Builder](https://github.com/hmlongco/Builder) demo application and has been explicitly designed for use in modern SwiftUI applications.
 
