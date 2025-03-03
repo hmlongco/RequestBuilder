@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-public protocol URLSessionManager: AnyObject {
+public protocol URLSessionManager: AnyObject, Sendable {
 
     // base
     var base: URL? { get }

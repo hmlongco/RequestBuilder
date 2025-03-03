@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import Factory
 
+@MainActor
 class MainViewModel: ObservableObject {
 
     @Injected(\.userServiceType) var service: UserServiceType
@@ -32,29 +33,26 @@ class MainViewModel: ObservableObject {
         print("MainViewModel DEINIT")
     }
 
-    public var cancellables = Set<AnyCancellable>()
-
-    func combineLoad() {
+    func asyncLoadFromTask() async {
         state = .loading
-        service.list()
-            .delay(for: .seconds(5), scheduler: RunLoop.main)
-            .map {
-                $0.sorted(by: { ($0.name.last + $0.name.first).localizedLowercase
-                    < ($1.name.last + $1.name.first).localizedLowercase })
+        do {
+            let users = try await asyncLoadProcessNonisolated()
+            if users.isEmpty {
+                state = .empty("No current users found...")
+            } else {
+                state = .loaded(users)
             }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                if let error = try? completion.error() {
-                    self?.state = .error(error.localizedDescription + " Please try again later.")
-                }
-            } receiveValue: { [weak self] (users) in
-                if users.isEmpty {
-                    self?.state = .empty("No users found...")
-                } else {
-                    self?.state = .loaded(users)
-                }
-            }
-            .store(in: &cancellables)
+        } catch is CancellationError {
+            print("cancelled") // ignore
+        } catch {
+            state = .error(error.localizedDescription + " Please try again later.")
+        }
+    }
+
+    private nonisolated func asyncLoadProcessNonisolated() async throws -> [User] {
+        let users = try await service.list()
+        try Task.checkCancellation()
+        return users.sorted { ($0.name.last + $0.name.first).lowercased() < ($1.name.last + $1.name.first).lowercased() }
     }
 
     func refresh() {
@@ -82,34 +80,6 @@ extension MainViewModel {
                 state = .error(error.localizedDescription + " Please try again later.")
             }
         }
-    }
-
-
-//    .task(priority: .background) {
-//        await viewModel.asyncLoadFromTask()
-//    }
-
-    @MainActor
-    func asyncLoadFromTask() async {
-        state = .loading
-        do {
-            let users = try await asyncLoadProcessNonisolated()
-            if users.isEmpty {
-                state = .empty("No current users found...")
-            } else {
-                state = .loaded(users)
-            }
-        } catch is CancellationError {
-            print("cancelled") // ignore
-        } catch {
-            state = .error(error.localizedDescription + " Please try again later.")
-        }
-    }
-
-    private nonisolated func asyncLoadProcessNonisolated() async throws -> [User] {
-        let users = try await service.list()
-        try Task.checkCancellation()
-        return users.sorted { ($0.name.last + $0.name.first).lowercased() < ($1.name.last + $1.name.first).lowercased() }
     }
 
     private func asyncLoadProcessSubtask() async throws -> [User] {

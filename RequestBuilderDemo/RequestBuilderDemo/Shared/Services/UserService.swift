@@ -10,11 +10,11 @@ import Factory
 import Combine
 import RequestBuilder
 
-public protocol UserServiceType {
-    func list() -> AnyPublisher<[User], APIError>
+public protocol UserServiceType: Sendable {
     func list() async throws -> [User]
 }
 
+@MainActor
 struct UserService: UserServiceType {
 
     @Injected(\.sessionManager) private var session
@@ -26,18 +26,6 @@ struct UserService: UserServiceType {
             .add(queryItems: ["results" : "75", "seed": "998", "nat": "us"])
             .data(type: UserResultType.self, decoder: JSONDecoder())
             .results
-    }
-
-    /// Fetches list of users from API and returns result using Combine publisher
-    public func list() -> AnyPublisher<[User], APIError> {
-        return session.request()
-            .add(path: "/api")
-            .add(queryItems: ["results" : "50", "seed": "998", "nat": "us"])
-            .data(type: UserResultType.self, decoder: JSONDecoder())
-            .map(\.results)
-            .mapAPIErrors()
-            .receive(on: DispatchQueue.main)
-            .eraseToAnyPublisher()
     }
 
 }

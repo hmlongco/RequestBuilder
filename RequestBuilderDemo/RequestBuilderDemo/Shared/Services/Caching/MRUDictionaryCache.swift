@@ -1,5 +1,5 @@
 //
-//  MRUDictionaryCacheStrategy.swift
+//  MRUDictionaryCache.swift
 //  RequestBuilderDemo
 //
 //  Created by Michael Long on 3/1/25.
@@ -8,11 +8,11 @@
 import Foundation
 import os
 
-public class MRUDictionaryCache<Key: Hashable, Value>: CacheStrategy {
+public class MRUDictionaryCache<Key: Hashable & Sendable, Value: Sendable>: CacheStrategy, @unchecked Sendable {
 
     private typealias CacheType = Dictionary<Key, Entry>
 
-    private class Entry {
+    private final class Entry: @unchecked Sendable {
         let key: Key
         let value: Value
         var timestamp: Date = .now
@@ -51,6 +51,12 @@ public class MRUDictionaryCache<Key: Hashable, Value>: CacheStrategy {
                     .forEach { cache.removeValue(forKey: $0.key) }
             }
             cache[key] = Entry(key: key, value: value)
+        }
+    }
+
+    public func remove(_ key: Key) {
+        cache.withLock {
+            _ = $0.removeValue(forKey: key)
         }
     }
 

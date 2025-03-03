@@ -10,32 +10,26 @@ import os
 
 public protocol CacheStrategy<Key, Value> {
 
-    associatedtype Key: Hashable
-    associatedtype Value
+    associatedtype Key: Hashable & Sendable
+    associatedtype Value: Sendable
 
     func get(_ key: Key) -> Value?
     func set(_ key: Key, value: Value)
+
+    func remove(_ key: Key)
 
     func reset()
 
 }
 
-public final class BasicCache<Key: Hashable, Value>: CacheStrategy {
+extension CacheStrategy {
 
-    private var cache: OSAllocatedUnfairLock<Dictionary<Key, Value>> = .init(initialState: [:])
-
-    public init() {}
-
-    public func get(_ key: Key) -> Value? {
-        cache.withLock { $0[key] }
+    func set(_ key: Key, value: Value?) {
+        if let value = value {
+            self.set(key, value: value)
+        } else {
+            self.remove(key)
+        }
     }
-
-    public func set(_ key: Key, value: Value) {
-        cache.withLock { $0[key] = value }
-    }
-
-    public func reset() {
-        cache.withLock { $0 = [:] }
-    }
-
+    
 }

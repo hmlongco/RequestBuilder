@@ -14,12 +14,13 @@ extension Container {
     
     var userImageCache: Factory<UserImageCache> {
         self {
-            UserImageCache(cache: AsyncCache(cache: MRUDictionaryCache<URL, UIImage>()))
+            UserImageCache(cache: ThrottledAsyncCache(cache: MRUDictionaryCache<URL, UIImage>(), limit: 10))
         }.shared
     }
 
+    @MainActor
     var userServiceType: Factory<UserServiceType> {
-        self { UserService() }
+        self { @MainActor in UserService() }
     }
 
 }

@@ -5,7 +5,7 @@
 import Foundation
 
 // MARK: - User
-public struct User: Hashable, Identifiable, Codable, Equatable {
+public struct User: Hashable, Identifiable, Codable, Equatable, Sendable {
 
     public let id: UUID
 
@@ -72,19 +72,19 @@ public struct User: Hashable, Identifiable, Codable, Equatable {
 
 
 // MARK: - Dob
-public struct UserDOB: Hashable, Codable, Equatable {
+public struct UserDOB: Hashable, Codable, Equatable, Sendable {
     let date: String?
     let age: Int?
 }
 
 // MARK: - ID
-public struct UserID: Hashable, Codable, Equatable {
+public struct UserID: Hashable, Codable, Equatable, Sendable {
     let name: String?
     let value: String?
 }
 
 // MARK: - Location
-public struct UserLocation: Hashable, Codable, Equatable {
+public struct UserLocation: Hashable, Codable, Equatable, Sendable {
     let street: UserStreet?
     let city: String?
     let state: String?
@@ -117,7 +117,7 @@ public struct UserLocation: Hashable, Codable, Equatable {
     }
 }
 
-public struct UserStreet: Hashable, Codable, Equatable {
+public struct UserStreet: Hashable, Codable, Equatable, Sendable {
     let number: String?
     let name: String?
 
@@ -143,7 +143,7 @@ public struct UserStreet: Hashable, Codable, Equatable {
 }
 
 // MARK: - Login
-public struct UserLogin: Hashable, Codable, Equatable {
+public struct UserLogin: Hashable, Codable, Equatable, Sendable {
     let uuid: String?
     let username: String?
     let password: String?
@@ -154,21 +154,21 @@ public struct UserLogin: Hashable, Codable, Equatable {
 }
 
 // MARK: - Name
-public struct UserName: Hashable, Codable, Equatable {
+public struct UserName: Hashable, Codable, Equatable, Sendable {
     let title: String?
     let first: String
     let last: String
 }
 
 // MARK: - Picture
-public struct UserPicture: Hashable, Codable, Equatable {
+public struct UserPicture: Hashable, Codable, Equatable, Sendable {
     let large: String?
     let medium: String?
     let thumbnail: String?
 }
 
 // MARK: - API Result Type
-public struct UserResultType: Decodable {
+public struct UserResultType: Decodable, Sendable {
     let results: [User]
 }
 
@@ -182,7 +182,7 @@ extension User {
 // MARK: - MOCKS
 extension User {
     
-    static var users = [mockTS, mockJQ] // deliberately provided out of sort order
+    static let users = [mockTS, mockJQ] // deliberately provided out of sort order
 
     static var mockJQ: User {
         return User(

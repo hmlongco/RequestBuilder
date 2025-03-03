@@ -1,5 +1,5 @@
 //
-//  MRUArrayCacheStrategy.swift
+//  MRUArrayCache.swift
 //  RequestBuilderDemo
 //
 //  Created by Michael Long on 3/1/25.
@@ -8,7 +8,7 @@
 import Foundation
 import os
 
-public class MRUArrayCache<Key: Hashable, Value>: CacheStrategy {
+public class MRUArrayCache<Key: Hashable & Sendable, Value: Sendable>: CacheStrategy, @unchecked Sendable {
 
     private struct Entry {
         let key: Key
@@ -44,6 +44,14 @@ public class MRUArrayCache<Key: Hashable, Value>: CacheStrategy {
                 cache = Array(cache.dropFirst(dropCount))
             }
             cache.append(Entry(key: key, value: value))
+        }
+    }
+
+    public func remove(_ key: Key) {
+        cache.withLock { cache in
+            if let index = cache.lastIndex(where: { $0.key == key }) {
+                cache.remove(at: index)
+            }
         }
     }
 
