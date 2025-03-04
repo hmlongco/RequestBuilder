@@ -14,8 +14,9 @@ public protocol AsyncCacheStrategy<Key, Value> {
     associatedtype Value: Sendable
 
     @MainActor func currentItem(for key: Key) -> Value?
-    @MainActor func item(for key: Key, request: @escaping () async throws -> Value?) async -> Value?
+    @MainActor func item(for key: Key, request: @escaping @Sendable () async throws -> Value?) async -> Value?
 
+    @MainActor func cancel()
     @MainActor func reset()
 
 }

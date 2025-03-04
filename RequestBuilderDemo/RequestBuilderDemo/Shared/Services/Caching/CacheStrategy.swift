@@ -31,5 +31,5 @@ extension CacheStrategy {
             self.remove(key)
         }
     }
-    
+
 }

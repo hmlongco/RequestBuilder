@@ -48,6 +48,11 @@ public class AsyncCache<Key: Hashable & Sendable, Value: Sendable>: AsyncCacheSt
     }
 
     @MainActor
+    public func cancel() {
+        tasks.forEach { $1.cancel() }
+    }
+
+    @MainActor
     public func reset() {
         cache.reset()
     }
