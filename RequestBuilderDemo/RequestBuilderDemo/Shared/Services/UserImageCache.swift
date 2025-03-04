@@ -56,6 +56,7 @@ class UserImageCache {
     @MainActor
     private func image(for url: URL) async -> UIImage? {
         await cache.item(for: url) { [session] in
+            try await Task.sleep(for: .milliseconds(Int.random(in: 100...250)))
             let data: Data = try await session.request(forURL: url).data()
             return await UIImage(data: data)?.byPreparingForDisplay()
         }
