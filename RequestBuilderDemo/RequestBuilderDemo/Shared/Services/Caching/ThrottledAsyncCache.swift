@@ -25,6 +25,7 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
         tasks.forEach { $1.cancel() }
     }
 
+    @MainActor
     public func item(for key: Key, request: @escaping () async throws -> Value?) async -> Value? {
         if let item = cache.get(key) {
             return item
