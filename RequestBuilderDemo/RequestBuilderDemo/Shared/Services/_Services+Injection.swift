@@ -14,7 +14,7 @@ extension Container {
     
     var userImageCache: Factory<UserImageCache> {
         self {
-            UserImageCache(cache: ThrottledAsyncCache(cache: MRUDictionaryCache<URL, UIImage>(), limit: 5))
+            UserImageCache(cache: ThrottledAsyncCache(cache: MRUDictionaryCache<URL, UIImage>(), limit: 20))
         }.shared
     }
 

@@ -12,11 +12,13 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
     private var cache: any CacheStrategy<Key, Value>
     private var tasks: [Key: Task<Value?, Never>] = [:]
 
-    private let semaphore: AsyncSemaphore
+    private let limit: Int
+    private var currentCount = 0
+    private var waitQueue: [CheckedContinuation<Void, Never>] = []
 
     public init(cache: any CacheStrategy<Key, Value>, limit: Int = 20) {
         self.cache = cache
-        self.semaphore = .init(limit: limit)
+        self.limit = limit
     }
 
     deinit {
@@ -32,15 +34,18 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
             return await task.value
         }
 
-        await semaphore.wait()
+        defer { signal() }
+        await semaphore()
+
+        if Task.isCancelled {
+            return nil
+        }
 
         if let item = cache.get(key) {
-            await semaphore.signal()
             return item
         }
 
         if let task = tasks[key] {
-            await semaphore.signal() // waiting on someone else's task so unblock while we wait
             return await task.value
         }
 
@@ -51,7 +56,6 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
         cache.set(key, value: value)
 
         tasks.removeValue(forKey: key)
-        await semaphore.signal()
 
         return value
     }
@@ -71,19 +75,8 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
         cache.reset()
     }
 
-}
-
-private actor AsyncSemaphore {
-
-    private let limit: Int
-    private var currentCount = 0
-    private var waitQueue: [CheckedContinuation<Void, Never>] = []
-
-    init(limit: Int) {
-        self.limit = limit
-    }
-
-    func wait() async {
+    @MainActor
+    private func semaphore() async {
         await withCheckedContinuation { continuation in
             if currentCount < limit {
                 currentCount += 1
@@ -94,7 +87,8 @@ private actor AsyncSemaphore {
         }
     }
 
-    func signal() {
+    @MainActor
+    private func signal() {
         if let continuation = waitQueue.first {
             waitQueue.removeFirst()
             continuation.resume()
