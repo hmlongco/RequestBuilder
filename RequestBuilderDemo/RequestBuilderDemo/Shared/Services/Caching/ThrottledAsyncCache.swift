@@ -9,12 +9,14 @@ import Foundation
 
 public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: AsyncCacheStrategy {
 
+    public typealias Factory = () async throws -> Value?
+
     private var cache: any CacheStrategy<Key, Value>
     private var tasks: [Key: Task<Value?, Never>] = [:]
 
+    private var queue: [CheckedContinuation<Void, Never>] = []
     private let limit: Int
-    private var currentCount = 0
-    private var waitQueue: [CheckedContinuation<Void, Never>] = []
+    private var count = 0
 
     public init(cache: any CacheStrategy<Key, Value>, limit: Int = 20) {
         self.cache = cache
@@ -26,7 +28,12 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
     }
 
     @MainActor
-    public func item(for key: Key, request: @escaping () async throws -> Value?) async -> Value? {
+    public func currentItem(for key: Key) -> Value? {
+        cache.get(key)
+    }
+
+    @MainActor
+    public func item(for key: Key, request: @escaping Factory) async -> Value? {
         if let item = cache.get(key) {
             return item
         }
@@ -35,18 +42,19 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
             return await task.value
         }
 
-        defer { signal() }
+        // only a limited number of tasks can be active at the same time
         await semaphore()
 
-        if Task.isCancelled {
-            return nil
-        }
-
+        // double check needed as duplicate requests could have been made while suspended
         if let item = cache.get(key) {
+            signal()
             return item
         }
 
         if let task = tasks[key] {
+            // already have a task, open up our "slot" while we wait on someone else's task
+            // defer would wait until after the task returned.
+            signal()
             return await task.value
         }
 
@@ -57,13 +65,9 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
         cache.set(key, value: value)
 
         tasks.removeValue(forKey: key)
+        signal()
 
         return value
-    }
-
-    @MainActor
-    public func currentItem(for key: Key) -> Value? {
-        cache.get(key)
     }
 
     @MainActor
@@ -79,22 +83,23 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
     @MainActor
     private func semaphore() async {
         await withCheckedContinuation { continuation in
-            if currentCount < limit {
-                currentCount += 1
+            if count < limit {
+                count += 1
                 continuation.resume()
             } else {
-                waitQueue.append(continuation)
+                // print("THROTTLED")
+                queue.append(continuation)
             }
         }
     }
 
     @MainActor
     private func signal() {
-        if let continuation = waitQueue.first {
-            waitQueue.removeFirst()
+        if let continuation = queue.first {
+            queue.removeFirst()
             continuation.resume()
         } else {
-            currentCount = max(currentCount - 1, 0)
+            count = max(count - 1, 0)
         }
     }
 
