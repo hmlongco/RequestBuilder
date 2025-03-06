@@ -48,6 +48,7 @@
 		4CE01BFD2D74EC6E00091B61 /* CacheStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE01BFC2D74EC5900091B61 /* CacheStrategy.swift */; };
 		4CE01BFF2D7506D700091B61 /* AsyncCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE01BFE2D7506D700091B61 /* AsyncCache.swift */; };
 		4CE01C012D75072900091B61 /* MemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE01C002D75072900091B61 /* MemoryCache.swift */; };
+		4CE01C052D7A27D500091B61 /* AsyncSemaphore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE01C042D7A27D500091B61 /* AsyncSemaphore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +112,7 @@
 		4CE01BFC2D74EC5900091B61 /* CacheStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheStrategy.swift; sourceTree = "<group>"; };
 		4CE01BFE2D7506D700091B61 /* AsyncCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCache.swift; sourceTree = "<group>"; };
 		4CE01C002D75072900091B61 /* MemoryCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryCache.swift; sourceTree = "<group>"; };
+		4CE01C042D7A27D500091B61 /* AsyncSemaphore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncSemaphore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -347,6 +349,7 @@
 			isa = PBXGroup;
 			children = (
 				4CE01BFE2D7506D700091B61 /* AsyncCache.swift */,
+				4CE01C042D7A27D500091B61 /* AsyncSemaphore.swift */,
 				4CE01BEF2D736FE500091B61 /* AsyncCacheStrategy.swift */,
 				4CE01BFC2D74EC5900091B61 /* CacheStrategy.swift */,
 				4CE01C002D75072900091B61 /* MemoryCache.swift */,
@@ -509,6 +512,7 @@
 				4CE01BF02D736FE500091B61 /* AsyncCacheStrategy.swift in Sources */,
 				4CE01C012D75072900091B61 /* MemoryCache.swift in Sources */,
 				4CD767BE28C85FE900CFCF62 /* StandardEmptyView.swift in Sources */,
+				4CE01C052D7A27D500091B61 /* AsyncSemaphore.swift in Sources */,
 				4CD767CE28C860AC00CFCF62 /* _Networking+Injection.swift in Sources */,
 				4CD767BD28C85FE900CFCF62 /* UserImageCache.swift in Sources */,
 				4CD767A928C85F9F00CFCF62 /* MainViewModel.swift in Sources */,

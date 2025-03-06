@@ -9,18 +9,16 @@ import Foundation
 
 public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: AsyncCacheStrategy {
 
-    public typealias Factory = () async throws -> Value?
+    public typealias Request = () async throws -> Value?
 
     private var cache: any CacheStrategy<Key, Value>
     private var tasks: [Key: Task<Value?, Never>] = [:]
 
-    private var queue: [CheckedContinuation<Void, Never>] = []
-    private let limit: Int
-    private var count = 0
+    private let semaphore: AsyncSemaphore
 
     public init(cache: any CacheStrategy<Key, Value>, limit: Int = 20) {
         self.cache = cache
-        self.limit = limit
+        self.semaphore = LimitAsyncSemaphore(limit: limit)
     }
 
     deinit {
@@ -33,7 +31,7 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
     }
 
     @MainActor
-    public func item(for key: Key, request: @escaping Factory) async -> Value? {
+    public func item(for key: Key, request: @escaping Request) async -> Value? {
         if let item = cache.get(key) {
             return item
         }
@@ -43,18 +41,18 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
         }
 
         // only a limited number of tasks can be active at the same time
-        await semaphore()
+        await semaphore.wait()
 
         // double check needed as duplicate requests could have been made while suspended
         if let item = cache.get(key) {
-            signal()
+            await semaphore.signal()
             return item
         }
 
         if let task = tasks[key] {
             // already have a task, open up our "slot" while we wait on someone else's task
             // defer would wait until after the task returned.
-            signal()
+            await semaphore.signal()
             return await task.value
         }
 
@@ -65,7 +63,7 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
         cache.set(key, value: value)
 
         tasks.removeValue(forKey: key)
-        signal()
+        await semaphore.signal()
 
         return value
     }
@@ -78,29 +76,6 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
     @MainActor
     public func reset() {
         cache.reset()
-    }
-
-    @MainActor
-    private func semaphore() async {
-        await withCheckedContinuation { continuation in
-            if count < limit {
-                count += 1
-                continuation.resume()
-            } else {
-                // print("THROTTLED")
-                queue.append(continuation)
-            }
-        }
-    }
-
-    @MainActor
-    private func signal() {
-        if let continuation = queue.first {
-            queue.removeFirst()
-            continuation.resume()
-        } else {
-            count = max(count - 1, 0)
-        }
     }
 
 }
