@@ -21,12 +21,11 @@ public class AsyncCache<Key: Hashable & Sendable, Value: Sendable>: AsyncCacheSt
         tasks.forEach { $1.cancel() }
     }
 
-    @MainActor
     public func currentItem(for key: Key) -> Value? {
         cache.get(key)
     }
 
-    @MainActor
+    @AsyncCacheActor
     public func item(for key: Key, request: @escaping () async throws -> Value?) async -> Value? {
         if let item = cache.get(key) {
             return item
@@ -47,12 +46,10 @@ public class AsyncCache<Key: Hashable & Sendable, Value: Sendable>: AsyncCacheSt
         return value
     }
 
-    @MainActor
     public func cancel() {
         tasks.forEach { $1.cancel() }
     }
 
-    @MainActor
     public func reset() {
         cache.reset()
     }

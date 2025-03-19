@@ -25,12 +25,11 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
         tasks.forEach { $1.cancel() }
     }
 
-    @MainActor
     public func currentItem(for key: Key) -> Value? {
         cache.get(key)
     }
 
-    @MainActor
+    @AsyncCacheActor
     public func item(for key: Key, request: @escaping Request) async -> Value? {
         if let item = cache.get(key) {
             return item
@@ -40,40 +39,27 @@ public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: Asy
             return await task.value
         }
 
-        // only a limited number of tasks can be active at the same time
-        await semaphore.wait()
-
-        // double check needed as duplicate requests could have been made while suspended
-        if let item = cache.get(key) {
+        let task = Task<Value?, Never> {
+            var value: Value?
+            await semaphore.wait()
+            if Task.isCancelled == false {
+                value = try? await request()
+                cache.set(key, value: value)
+            }
+            tasks.removeValue(forKey: key)
             await semaphore.signal()
-            return item
+            return value
         }
 
-        if let task = tasks[key] {
-            // already have a task, open up our "slot" while we wait on someone else's task
-            // defer would wait until after the task returned.
-            await semaphore.signal()
-            return await task.value
-        }
-
-        let task = Task<Value?, Never> { try? await request() }
         tasks[key] = task
 
-        let value = await task.value
-        cache.set(key, value: value)
-
-        tasks.removeValue(forKey: key)
-        await semaphore.signal()
-
-        return value
+        return await task.value
     }
 
-    @MainActor
     public func cancel() {
         tasks.forEach { $1.cancel() }
     }
 
-    @MainActor
     public func reset() {
         cache.reset()
     }

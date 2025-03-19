@@ -13,10 +13,16 @@ public protocol AsyncCacheStrategy<Key, Value> {
     associatedtype Key: Hashable & Sendable
     associatedtype Value: Sendable
 
-    @MainActor func currentItem(for key: Key) -> Value?
-    @MainActor func item(for key: Key, request: @escaping @Sendable () async throws -> Value?) async -> Value?
+    func currentItem(for key: Key) -> Value?
 
-    @MainActor func cancel()
-    @MainActor func reset()
+    func item(for key: Key, request: @escaping @Sendable () async throws -> Value?) async -> Value?
 
+    func cancel()
+    func reset()
+
+}
+
+@globalActor
+actor AsyncCacheActor {
+    static let shared = AsyncCacheActor()
 }

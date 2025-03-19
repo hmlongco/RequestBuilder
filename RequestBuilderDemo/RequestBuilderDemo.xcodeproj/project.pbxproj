@@ -49,6 +49,7 @@
 		4CE01BFF2D7506D700091B61 /* AsyncCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE01BFE2D7506D700091B61 /* AsyncCache.swift */; };
 		4CE01C012D75072900091B61 /* MemoryCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE01C002D75072900091B61 /* MemoryCache.swift */; };
 		4CE01C052D7A27D500091B61 /* AsyncSemaphore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE01C042D7A27D500091B61 /* AsyncSemaphore.swift */; };
+		4CE01C092D80952100091B61 /* CallbackTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE01C082D80951300091B61 /* CallbackTest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +114,7 @@
 		4CE01BFE2D7506D700091B61 /* AsyncCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncCache.swift; sourceTree = "<group>"; };
 		4CE01C002D75072900091B61 /* MemoryCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryCache.swift; sourceTree = "<group>"; };
 		4CE01C042D7A27D500091B61 /* AsyncSemaphore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncSemaphore.swift; sourceTree = "<group>"; };
+		4CE01C082D80951300091B61 /* CallbackTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallbackTest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -341,6 +343,7 @@
 			isa = PBXGroup;
 			children = (
 				4CD767CD28C860AC00CFCF62 /* _Networking+Injection.swift */,
+				4CE01C082D80951300091B61 /* CallbackTest.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -523,6 +526,7 @@
 				4CD767A628C85F9F00CFCF62 /* MainListView.swift in Sources */,
 				4CD767C528C85FE900CFCF62 /* Combine+JustError.swift in Sources */,
 				4CD767A228C85F9B00CFCF62 /* DetailsCardView.swift in Sources */,
+				4CE01C092D80952100091B61 /* CallbackTest.swift in Sources */,
 				4CD767BF28C85FE900CFCF62 /* StandardLoadingView.swift in Sources */,
 				4CD767BC28C85FE900CFCF62 /* _Services+Injection.swift in Sources */,
 				4CD767A328C85F9B00CFCF62 /* DetailsViewModel.swift in Sources */,
