@@ -36,12 +36,12 @@ public class AsyncCache<Key: Hashable & Sendable, Value: Sendable>: AsyncCacheSt
         }
 
         let task = Task<Value?, Never> { try? await request() }
+
+        defer { tasks.removeValue(forKey: key) }
         tasks[key] = task
 
         let value = await task.value
         cache.set(key, value: value)
-
-        tasks.removeValue(forKey: key)
 
         return value
     }

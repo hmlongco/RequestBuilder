@@ -10,19 +10,19 @@ import Factory
 import Combine
 import RequestBuilder
 
-class UserImageCache {
+@MainActor
+final class UserImageCache {
 
     @Injected(\.sessionManager) private var session
 
     private let cache: any AsyncCacheStrategy<URL, UIImage>
 
-    init(cache: any AsyncCacheStrategy<URL, UIImage>) {
+    nonisolated init(cache: any AsyncCacheStrategy<URL, UIImage>) {
         self.cache = cache
     }
 
     // public interface
 
-    @MainActor
     func existingThumbnail(forUser user: User) -> UIImage? {
         guard let path = user.picture?.thumbnail, let url = URL(string: path), let image = cache.currentItem(for: url) else {
             return nil
@@ -30,7 +30,6 @@ class UserImageCache {
         return image
     }
 
-    @MainActor
     func thumbnail(forUser user: User) async -> UIImage? {
         guard let path = user.picture?.thumbnail, let url = URL(string: path) else {
             return nil
@@ -38,7 +37,6 @@ class UserImageCache {
         return await image(for: url)
     }
 
-    @MainActor
     func photo(forUser user: User) async -> UIImage? {
         guard let path = user.picture?.large, let url = URL(string: path) else {
             return nil
@@ -46,14 +44,12 @@ class UserImageCache {
         return await image(for: url)
     }
 
-    @MainActor
     func reset() {
         cache.reset()
     }
 
     // core
 
-    @MainActor
     private func image(for url: URL) async -> UIImage? {
         await cache.item(for: url) { [session] in
             try await Task.sleep(for: .milliseconds(Int.random(in: 100...250)))

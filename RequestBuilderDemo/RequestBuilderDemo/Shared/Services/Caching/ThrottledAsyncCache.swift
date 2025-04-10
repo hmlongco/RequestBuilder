@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: AsyncCacheStrategy {
+public class ThrottledAsyncCache<Key: Hashable & Sendable, Value: Sendable>: AsyncCacheStrategy, @unchecked Sendable {
 
     public typealias Request = () async throws -> Value?
 

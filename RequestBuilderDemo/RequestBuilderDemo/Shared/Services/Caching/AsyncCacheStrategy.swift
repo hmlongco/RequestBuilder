@@ -8,7 +8,7 @@
 import Foundation
 import os
 
-public protocol AsyncCacheStrategy<Key, Value> {
+public protocol AsyncCacheStrategy<Key, Value>: Sendable {
 
     associatedtype Key: Hashable & Sendable
     associatedtype Value: Sendable
