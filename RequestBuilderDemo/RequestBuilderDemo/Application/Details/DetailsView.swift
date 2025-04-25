@@ -29,16 +29,21 @@ struct DetailsView: View {
         .background(Color(.secondarySystemBackground).edgesIgnoringSafeArea(.vertical))
         .navigationTitle(user.fullname)
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            try? await Task.sleep(for: .seconds(5))
+            await doSomething()
+        }
     }
 
-    let disclaimer = "Information presented above is not repesentative of any person, living, dead, undead, or fictional."
+    let disclaimer = "Information presented above is not representative of any person, living, dead, undead, or fictional."
 
+    func doSomething() async {
+        print("Doing something...")
+    }
 }
 
-struct DetailsView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            DetailsView(user: User.mockJQ)
-        }
+#Preview {
+    NavigationView {
+        DetailsView(user: User.mockJQ)
     }
 }

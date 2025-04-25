@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-public class URLRequestInterceptorHeaders: URLRequestInterceptor {
+public final class URLRequestInterceptorHeaders: URLRequestInterceptor, @unchecked Sendable {
 
     public var headers: [String : String]
     public var parent: URLSessionManager!

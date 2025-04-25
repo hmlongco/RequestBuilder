@@ -8,11 +8,11 @@
 import Foundation
 import Combine
 
-public class URLRequestInterceptorMock: URLRequestInterceptor {
+public final class URLRequestInterceptorMock: URLRequestInterceptor, @unchecked Sendable {
 
     public static let ANYPATH = "*"
 
-    public typealias Mock = (_ request: URLRequest) throws -> (Any?, Int, [String:String]?)
+    public typealias Mock = (_ request: URLRequest) throws -> (Data?, Int, [String:String]?)
 
     public var mocks: [String:Mock] = [:]
     public var parent: URLSessionManager!
@@ -31,12 +31,6 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
         let encoded = try? encoder.encode(data)
         add(path: path) { request in
             (encoded, status, headers)
-        }
-    }
-
-    public func add(path: String = ANYPATH, data: Any?, status: Int = 200, headers: [String:String]? = nil) {
-        add(path: path) { request in
-            (data, status, headers)
         }
     }
 
@@ -72,7 +66,7 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     // MARK: - Interceptor
 
-    public func data(for request: URLRequest) async throws -> (Any?, HTTPURLResponse?) {
+    public func data(for request: URLRequest) async throws -> (Data?, HTTPURLResponse?) {
         if !mocks.isEmpty {
             for path in searchPaths(from: request.url?.absoluteString) {
                 if let mock = mocks[path] {
@@ -85,7 +79,7 @@ public class URLRequestInterceptorMock: URLRequestInterceptor {
 
     // MARK: - Helpers
 
-    public func response(for request: URLRequest, mock: Mock) throws -> (Any?, HTTPURLResponse?) {
+    public func response(for request: URLRequest, mock: Mock) throws -> (Data?, HTTPURLResponse?) {
         guard let url = request.url else {
             throw URLError(.badURL)
         }

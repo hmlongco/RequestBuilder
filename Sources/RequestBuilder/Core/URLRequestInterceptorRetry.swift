@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-public class URLRequestInterceptorRetry: URLRequestInterceptor {
+public final class URLRequestInterceptorRetry: URLRequestInterceptor, @unchecked Sendable {
 
     public var count: Int
     public var parent: URLSessionManager!

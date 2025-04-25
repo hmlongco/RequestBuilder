@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-public class BaseSessionManager: URLSessionManager {
+public final class BaseSessionManager: URLSessionManager, @unchecked Sendable {
 
     public var base: URL?
     public var session: URLSession
@@ -40,7 +40,7 @@ public class BaseSessionManager: URLSessionManager {
     }
 
     /// Returns requested data and response from session.
-    public func data(for request: URLRequest) async throws -> (Any?, HTTPURLResponse?) {
+    public func data(for request: URLRequest) async throws -> (Data?, HTTPURLResponse?) {
         let (data, response) = try await session.data(for: request)
         return (data, response as? HTTPURLResponse)
     }

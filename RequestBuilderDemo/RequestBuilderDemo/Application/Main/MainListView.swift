@@ -11,6 +11,8 @@ struct MainListView: View {
 
     let users: [User]
 
+    @State var text = ""
+
     var body: some View {
         List(users) { user in
             NavigationLink(value: user) {
@@ -25,10 +27,8 @@ struct MainListView: View {
 
 }
 
-struct MainListView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            MainListView(users: User.users)
-        }
+#Preview {
+    NavigationStack {
+        MainListView(users: User.users)
     }
 }

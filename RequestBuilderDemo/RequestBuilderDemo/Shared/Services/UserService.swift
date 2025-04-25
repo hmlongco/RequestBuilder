@@ -23,8 +23,8 @@ struct UserService: UserServiceType {
     public func list() async throws -> [User] {
         try await session.request()
             .add(path: "/api")
-            .add(queryItems: ["results" : "75", "seed": "998", "nat": "us"])
-            .data(type: UserResultType.self, decoder: JSONDecoder())
+            .add(queryItems: ["results" : "25", "seed": "998", "nat": "us"])
+            .data(type: UserResultType.self)
             .results
     }
 

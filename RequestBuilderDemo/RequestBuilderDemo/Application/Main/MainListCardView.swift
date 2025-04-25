@@ -54,10 +54,7 @@ struct MainListCardView: View {
     }
 }
 
-struct MainListCardView_Previews: PreviewProvider {
-    static var previews: some View {
-        MainListCardView(user: User.mockJQ)
-            .padding()
-    }
+#Preview {
+    MainListCardView(user: User.mockJQ)
+        .padding()
 }
-

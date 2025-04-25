@@ -8,8 +8,8 @@
 import Foundation
 import Combine
 
-public class URLRequestInterceptorLogging: URLRequestInterceptor {
-    
+public final class URLRequestInterceptorLogging: URLRequestInterceptor, @unchecked Sendable {
+
      public enum Mode {
         case none
         case debug

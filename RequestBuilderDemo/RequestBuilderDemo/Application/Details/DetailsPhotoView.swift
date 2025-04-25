@@ -47,11 +47,9 @@ struct DetailsPhotoView: View {
 
 }
 
-struct DetailsPhotoView_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            DetailsPhotoView(photo: UIImage(named: "User-JQ"), name: "Michael Long")
-            Spacer()
-        }
+#Preview {
+    VStack {
+        DetailsPhotoView(photo: UIImage(named: "User-JQ"), name: "Michael Long")
+        Spacer()
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-public class URLRequestInterceptorStatusCodes: URLRequestInterceptor {
+public final class URLRequestInterceptorStatusCodes: URLRequestInterceptor, @unchecked Sendable {
 
     public var parent: URLSessionManager!
 

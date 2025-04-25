@@ -19,8 +19,8 @@ public protocol URLSessionManager: AnyObject, Sendable {
 
     // request support
     func request(forURL url: URL?) -> URLRequestBuilder
-    func data(for request: URLRequest) async throws -> (Any?, HTTPURLResponse?)
-
+    func data(for request: URLRequest) async throws -> (Data?, HTTPURLResponse?)
+    
     // interceptor support
     func interceptor(_ interceptor: URLRequestInterceptor) -> URLSessionManager
     

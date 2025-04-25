@@ -8,14 +8,14 @@
 import Foundation
 import Combine
 
-public class MockSessionManager: URLSessionManager {
+public final class MockSessionManager: URLSessionManager, @unchecked Sendable {
 
     public var base: URL?
     
     public lazy var encoder: DataEncoder = JSONEncoder()
     public lazy var decoder: DataDecoder = JSONDecoder()
 
-    private var data: Any?
+    private var data: Data?
     private let error: Error?
     private let status: Int
 
@@ -25,10 +25,11 @@ public class MockSessionManager: URLSessionManager {
         self.status = status
     }
 
-    public init<T>(data: T, status: Int = 200) {
-        self.data = data
+    public init<T: Encodable>(data: T, status: Int = 200) {
+        self.data = nil
         self.error = nil
         self.status = status
+        self.data = try? JSONEncoder().encode(data)
     }
 
     public init(error: Error) {
@@ -41,7 +42,7 @@ public class MockSessionManager: URLSessionManager {
         URLRequestBuilder(manager: self, url: url ?? URL(string: "/"))
     }
 
-    public func data(for request: URLRequest) async throws -> (Any?, HTTPURLResponse?) {
+    public func data(for request: URLRequest) async throws -> (Data?, HTTPURLResponse?) {
         if let data = data {
             let url = request.url ?? URL(string: "/")!
             let response = HTTPURLResponse(url: url, statusCode: status, httpVersion: nil, headerFields: nil)

@@ -168,7 +168,7 @@ public struct UserPicture: Hashable, Codable, Equatable, Sendable {
 }
 
 // MARK: - API Result Type
-public struct UserResultType: Decodable, Sendable {
+public struct UserResultType: Codable, Sendable {
     let results: [User]
 }
 
