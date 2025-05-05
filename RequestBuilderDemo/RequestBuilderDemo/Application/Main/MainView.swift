@@ -42,15 +42,15 @@ struct MainView: View {
 
 #if DEBUG
 #Preview {
-    let _ = UserService.mockUsers()
+    let _ = UserService.mockNetworkUsers()
     MainView()
 }
 #Preview {
-    let _ = UserService.mockNoUsers()
+    let _ = UserService.mockNetworkUsers(users: [])
     MainView()
 }
 #Preview {
-    let _ = UserService.mockUserError()
+    let _ = UserService.mockNetworkError()
     MainView()
 }
 #endif
