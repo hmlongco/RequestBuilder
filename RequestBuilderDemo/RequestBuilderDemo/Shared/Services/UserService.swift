@@ -29,3 +29,29 @@ struct UserService: UserServiceType {
     }
 
 }
+
+#if DEBUG
+extension UserService {
+
+    static func mockUsers() {
+        let session = Container.shared.sessionManager()
+        let image = UIImage(named: "User-JQ")?.pngData()
+        session.mocks?
+            .add(path: "User-JQ", data: image)
+            .add(path: "/api/portraits/med/men/16.jpg", data: image)
+            .add(path: "/api/portraits/men/16.jpg", data: image)
+            .add(path: "/api", data: UserResultType(results: User.mockUsers))
+    }
+
+    static func mockNoUsers() {
+        let session = Container.shared.sessionManager()
+        session.mocks?.add(path: "/api", data: UserResultType(results: []))
+    }
+
+    static func mockUserError() {
+        let session = Container.shared.sessionManager()
+        session.mocks?.add(path: "/api", status: 500)
+    }
+
+}
+#endif

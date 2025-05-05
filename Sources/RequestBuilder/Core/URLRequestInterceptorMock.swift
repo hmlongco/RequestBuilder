@@ -14,39 +14,44 @@ public final class URLRequestInterceptorMock: URLRequestInterceptor, @unchecked 
 
     public typealias Mock = (_ request: URLRequest) throws -> (Data?, Int, [String:String]?)
 
-    public var mocks: [String:Mock] = [:]
     public var parent: URLSessionManager!
+
+    public var mocks: [String:Mock] = [:]
 
     public init() {}
 
     // MARK: - Path Mocking
 
-    public func add(path: String = ANYPATH, data: Data?, status: Int = 200, headers: [String:String]? = nil) {
+    @discardableResult
+    public func add(path: String = ANYPATH, data: Data?, status: Int = 200, headers: [String:String]? = nil) -> Self {
         add(path: path) { request in
             (data, status, headers)
         }
     }
 
-    public func add<T:Encodable>(path: String = ANYPATH, data: T, status: Int = 200, headers: [String:String]? = nil) {
-        let encoded = try? encoder.encode(data)
+    @discardableResult
+    public func add<T:Encodable>(path: String = ANYPATH, data: T, status: Int = 200, headers: [String:String]? = nil) -> Self {
         add(path: path) { request in
-            (encoded, status, headers)
+            (try? self.encoder.encode(data), status, headers)
         }
     }
 
-    public func add(path: String = ANYPATH, json: String, status: Int = 200, headers: [String:String]? = nil) {
+    @discardableResult
+    public func add(path: String = ANYPATH, json: String, status: Int = 200, headers: [String:String]? = nil) -> Self {
         add(path: path) { request in
             (json.data(using: .utf8), status, headers)
         }
      }
 
-    public func add(path: String = ANYPATH, status: Int, headers: [String:String]? = nil) {
+    @discardableResult
+    public func add(path: String = ANYPATH, status: Int, headers: [String:String]? = nil) -> Self {
         add(path: path) { request in
             (nil, status, headers)
         }
     }
 
-    public func add(path: String = ANYPATH, error: Error) {
+    @discardableResult
+    public func add(path: String = ANYPATH, error: Error) -> Self {
         add(path: path) { request in
             throw error
         }
@@ -54,14 +59,17 @@ public final class URLRequestInterceptorMock: URLRequestInterceptor, @unchecked 
 
     // MARK: - Supporting
 
-    public func add(path: String, mock: @escaping Mock) {
+    @discardableResult
+    public func add(path: String, mock: @escaping Mock) -> Self {
         if let path = searchPaths(from: path).first {
-            mocks[path] = mock
+            self.mocks[path] = mock
         }
+        return self
     }
 
-    public func reset() {
+    public func reset() -> Self {
         mocks = [:]
+        return self
     }
 
     // MARK: - Interceptor
@@ -69,7 +77,7 @@ public final class URLRequestInterceptorMock: URLRequestInterceptor, @unchecked 
     public func data(for request: URLRequest) async throws -> (Data?, HTTPURLResponse?) {
         if !mocks.isEmpty {
             for path in searchPaths(from: request.url?.absoluteString) {
-                if let mock = mocks[path] {
+                if let mock = self.mocks[path] {
                     return try response(for: request, mock: mock)
                 }
             }

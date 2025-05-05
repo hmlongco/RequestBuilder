@@ -18,16 +18,9 @@ struct MainView: View {
         case .loading:
             VStack(spacing: 50) {
                 StandardLoadingView()
-                    .onAppear {
-//                        viewModel.combineLoad()
-//                        viewModel.asyncLoadFromAppear()
-                    }
-                    .task(priority: .background) {
+                    .task {
                          await viewModel.asyncLoadFromTask()
                     }
-//                Button("Cancel") {
-//                    // viewModel.cancellable?.cancel()
-//                }
             }
 
         case .loaded(let users):
@@ -47,8 +40,17 @@ struct MainView: View {
 
 }
 
-struct MainView_Previews: PreviewProvider {
-    static var previews: some View {
-        MainView()
-    }
+#if DEBUG
+#Preview {
+    let _ = UserService.mockUsers()
+    MainView()
 }
+#Preview {
+    let _ = UserService.mockNoUsers()
+    MainView()
+}
+#Preview {
+    let _ = UserService.mockUserError()
+    MainView()
+}
+#endif

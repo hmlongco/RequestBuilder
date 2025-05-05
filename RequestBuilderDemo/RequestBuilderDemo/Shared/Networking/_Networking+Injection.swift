@@ -11,11 +11,12 @@ import RequestBuilder
 
 extension Container {
 
-    var sessionManager: Factory<URLSessionManager> {
+    public var sessionManager: Factory<URLSessionManager> {
         self {
             BaseSessionManager(base: URL(string: "https://randomuser.me"), session: self.urlSession())
                 .set(decoder: JSONDecoder())
                 #if DEBUG
+                .interceptor(URLRequestInterceptorMock())
                 .interceptor(URLRequestInterceptorLogging(mode: .debug))
                 #endif
                 .interceptor(URLRequestInterceptorStatusCodes())
@@ -26,14 +27,11 @@ extension Container {
                     "OS": "iOS",
                     "DEVICE_UUID": "a604e727-e7c6-4634-94eb-5c562f14a5da"
                 ]))
-                #if DEBUG
-                .interceptor(URLRequestInterceptorMock())
-                #endif
         }
         .singleton
     }
 
-    var urlSession: Factory<URLSession> {
+    public var urlSession: Factory<URLSession> {
         self { URLSession(configuration: URLSessionConfiguration.ephemeral) }.singleton
     }
 

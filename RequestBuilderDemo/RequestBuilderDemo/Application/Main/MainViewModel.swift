@@ -102,28 +102,3 @@ class Tracker {
         print("Tracker \(id) RELEASED")
     }
 }
-
-
-class CommonViewModel: ObservableObject {
-
-    @Published var users: [User] = []
-
-    let userAPI = UserAPI()
-    var cancellables = Set<AnyCancellable>()
-
-    func load() {
-        userAPI.load()
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { users in
-                self.users = users
-            })
-            .store(in: &cancellables)
-    }
-}
-
-struct UserAPI {
-    func load() -> AnyPublisher<[User], Never> {
-        Just<[User]>([])
-            .eraseToAnyPublisher()
-    }
-}

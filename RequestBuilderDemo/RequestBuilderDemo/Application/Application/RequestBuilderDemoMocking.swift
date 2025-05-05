@@ -20,7 +20,7 @@ extension RequestBuilderDemoApp {
 //        session.mocks?.add(path: "/api?results=50&seed=998&nat=us", json: "{ \"results\": [] }")
 //        session.mocks?.add(path: "/api", json: "{ \"results\": [] }")
 //        session.mocks?.add(path: "/api", data: UserResultType(results: []))
-//        session.mocks?.add(path: "/api", data: UserResultType(results: User.users))
+//        session.mocks?.add(path: "/api", data: UserResultType(results: User.mockUsers))
 //        session.mocks?.add(path: "/api", status: 404)
 //        session.mocks?.add(status: 401)
 //        session.mocks?.add(error: APIError.connection)

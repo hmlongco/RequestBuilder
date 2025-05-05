@@ -29,6 +29,6 @@ struct MainListView: View {
 
 #Preview {
     NavigationStack {
-        MainListView(users: User.users)
+        MainListView(users: User.mockUsers)
     }
 }

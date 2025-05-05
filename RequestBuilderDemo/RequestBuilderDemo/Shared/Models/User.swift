@@ -181,8 +181,11 @@ extension User {
 
 // MARK: - MOCKS
 extension User {
-    
-    static let users = [mockTS, mockJQ] // deliberately provided out of sort order
+
+    static let mockUserResultType: UserResultType = .init(results: mockUsers)
+    static let mockEmptyUserResultType: UserResultType = .init(results: [])
+
+    static let mockUsers = [mockTS, mockJQ] // deliberately provided out of sort order
 
     static var mockJQ: User {
         return User(
