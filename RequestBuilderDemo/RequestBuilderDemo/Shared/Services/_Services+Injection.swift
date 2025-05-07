@@ -18,9 +18,8 @@ extension Container {
         }.shared
     }
 
-    @MainActor
     var userServiceType: Factory<UserServiceType> {
-        self { @MainActor in UserService() }
+        self { UserService() }
     }
 
 }

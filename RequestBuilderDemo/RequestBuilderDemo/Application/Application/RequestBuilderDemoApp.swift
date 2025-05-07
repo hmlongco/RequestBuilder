@@ -22,5 +22,5 @@ struct RequestBuilderDemoApp: App {
             ContentView()
         }
     }
-    
+
 }

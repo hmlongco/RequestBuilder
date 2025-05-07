@@ -11,23 +11,20 @@ import Combine
 import RequestBuilder
 
 public protocol UserServiceType: Sendable {
-    func list() async throws -> [User]
+    func load() async throws -> [User]
 }
 
-@MainActor
-struct UserService: UserServiceType {
+public struct UserService: UserServiceType {
 
     @Injected(\.sessionManager) private var session
 
-    /// Fetches list of users from API and returns result using async/await
-    public func list() async throws -> [User] {
+    public func load() async throws -> [User] {
         try await session.request()
             .add(path: "/api")
             .add(queryItems: ["results" : "25", "seed": "998", "nat": "us"])
             .data(type: UserResultType.self)
             .results
     }
-
 }
 
 #if DEBUG
@@ -49,4 +46,26 @@ extension UserService {
     }
 
 }
+
+public struct MockUserService: UserServiceType {
+    public func load() async throws -> [User] {
+        User.mockUsers
+    }
+}
+
+
+public struct MockUserService2: UserServiceType {
+    var users: [User] = User.mockUsers
+    public func load() async throws -> [User] {
+        users
+    }
+}
+
+public struct MockUserService3: UserServiceType {
+    var response: @Sendable () async throws -> [User] = { User.mockUsers }
+    public func load() async throws -> [User] {
+        try await response()
+    }
+}
+
 #endif

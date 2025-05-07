@@ -10,6 +10,9 @@
 		4C558A0528C978A30063234C /* RequestBuilder in Frameworks */ = {isa = PBXBuildFile; productRef = 4C558A0428C978A30063234C /* RequestBuilder */; };
 		4C7D648528DB859300E3233F /* SwiftUI+onDidAppear.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7D648428DB859300E3233F /* SwiftUI+onDidAppear.swift */; };
 		4CA223F828CD5A7000944456 /* RequestBuilderDemoMocking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA223F728CD5A7000944456 /* RequestBuilderDemoMocking.swift */; };
+		4CAAFFF12DCAC78700B4038A /* AsyncRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAFFF02DCAC78700B4038A /* AsyncRequest.swift */; };
+		4CAAFFF32DCC1F7B00B4038A /* SwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAFFF22DCC1F6600B4038A /* SwiftTests.swift */; };
+		4CAAFFF52DCC211100B4038A /* FactoryTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 4CAAFFF42DCC211100B4038A /* FactoryTesting */; };
 		4CC4FE9728DE12BA00F2FF19 /* GroupedSectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC4FE9628DE12BA00F2FF19 /* GroupedSectionViews.swift */; };
 		4CC4FE9C28DE1F5300F2FF19 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC4FE9B28DE1F5300F2FF19 /* AboutView.swift */; };
 		4CC4FE9F28DE247E00F2FF19 /* Color+Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC4FE9E28DE247E00F2FF19 /* Color+Styles.swift */; };
@@ -65,6 +68,8 @@
 /* Begin PBXFileReference section */
 		4C7D648428DB859300E3233F /* SwiftUI+onDidAppear.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUI+onDidAppear.swift"; sourceTree = "<group>"; };
 		4CA223F728CD5A7000944456 /* RequestBuilderDemoMocking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestBuilderDemoMocking.swift; sourceTree = "<group>"; };
+		4CAAFFF02DCAC78700B4038A /* AsyncRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncRequest.swift; sourceTree = "<group>"; };
+		4CAAFFF22DCC1F6600B4038A /* SwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTests.swift; sourceTree = "<group>"; };
 		4CC4FE9628DE12BA00F2FF19 /* GroupedSectionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupedSectionViews.swift; sourceTree = "<group>"; };
 		4CC4FE9B28DE1F5300F2FF19 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		4CC4FE9E28DE247E00F2FF19 /* Color+Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Styles.swift"; sourceTree = "<group>"; };
@@ -117,6 +122,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CAAFFF52DCC211100B4038A /* FactoryTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,6 +197,7 @@
 			isa = PBXGroup;
 			children = (
 				4CD7677B28C8225B00CFCF62 /* RequestBuilderDemoTests.swift */,
+				4CAAFFF22DCC1F6600B4038A /* SwiftTests.swift */,
 			);
 			path = RequestBuilderDemoTests;
 			sourceTree = "<group>";
@@ -329,6 +336,7 @@
 			isa = PBXGroup;
 			children = (
 				4CD767CD28C860AC00CFCF62 /* _Networking+Injection.swift */,
+				4CAAFFF02DCAC78700B4038A /* AsyncRequest.swift */,
 				4CE01C082D80951300091B61 /* CallbackTest.swift */,
 			);
 			path = Networking;
@@ -489,6 +497,7 @@
 				4CD96AC62DBC1EEB00714D9A /* DetachedTaskRunner.swift in Sources */,
 				4CD767A628C85F9F00CFCF62 /* MainListView.swift in Sources */,
 				4CD767C528C85FE900CFCF62 /* Combine+JustError.swift in Sources */,
+				4CAAFFF12DCAC78700B4038A /* AsyncRequest.swift in Sources */,
 				4CD767A228C85F9B00CFCF62 /* DetailsCardView.swift in Sources */,
 				4CE01C092D80952100091B61 /* CallbackTest.swift in Sources */,
 				4CD767BF28C85FE900CFCF62 /* StandardLoadingView.swift in Sources */,
@@ -508,6 +517,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CD7677C28C8225B00CFCF62 /* RequestBuilderDemoTests.swift in Sources */,
+				4CAAFFF32DCC1F7B00B4038A /* SwiftTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -856,6 +866,11 @@
 		4C558A0428C978A30063234C /* RequestBuilder */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = RequestBuilder;
+		};
+		4CAAFFF42DCC211100B4038A /* FactoryTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4CD767C628C8601C00CFCF62 /* XCRemoteSwiftPackageReference "Factory" */;
+			productName = FactoryTesting;
 		};
 		4CD767C728C8601C00CFCF62 /* Factory */ = {
 			isa = XCSwiftPackageProductDependency;

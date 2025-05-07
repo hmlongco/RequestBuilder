@@ -12,7 +12,8 @@ import Factory
 @MainActor
 class MainViewModel: ObservableObject {
 
-    @Injected(\.userServiceType) var service: UserServiceType
+    //    @Injected(\.userServiceType) var service: UserServiceType
+    @Injected(\.requestUsers) var asyncRequestUsers
 
     enum State: Equatable {
         case loading
@@ -33,7 +34,7 @@ class MainViewModel: ObservableObject {
         print("MainViewModel DEINIT")
     }
 
-    func asyncLoadFromTask() async {
+    func load() async {
         state = .loading
         do {
             let users = try await asyncLoadProcessNonisolated()
@@ -50,44 +51,14 @@ class MainViewModel: ObservableObject {
     }
 
     private nonisolated func asyncLoadProcessNonisolated() async throws -> [User] {
-        let users = try await service.list()
+        //        let users = try await service.list()
+        let users = try await asyncRequestUsers()
         try Task.checkCancellation()
         return users.sorted { ($0.name.last + $0.name.first).lowercased() < ($1.name.last + $1.name.first).lowercased() }
     }
 
     func refresh() {
         state = .loading
-    }
-
-}
-
-extension MainViewModel {
-
-    @MainActor
-    func asyncLoadFromAppear() {
-        state = .loading
-        Task {
-            do {
-                let users = try await asyncLoadProcessSubtask()
-                if users.isEmpty {
-                    state = .empty("No current users found...")
-                } else {
-                    state = .loaded(users)
-                }
-            } catch is CancellationError {
-                // ignore
-            } catch {
-                state = .error(error.localizedDescription + " Please try again later.")
-            }
-        }
-    }
-
-    private func asyncLoadProcessSubtask() async throws -> [User] {
-        let users = try await service.list()
-        try Task.checkCancellation()
-        return await Task {
-            users.sorted { ($0.name.last + $0.name.first).lowercased() < ($1.name.last + $1.name.first).lowercased() }
-        }.value
     }
 
 }

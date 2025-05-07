@@ -14,43 +14,42 @@ struct MainView: View {
 
     var body: some View {
         switch viewModel.state {
-
         case .loading:
-            VStack(spacing: 50) {
-                StandardLoadingView()
-                    .task {
-                         await viewModel.asyncLoadFromTask()
-                    }
-            }
-
+            StandardLoadingView()
+                .padding(50)
+                .task {
+                    await viewModel.load()
+                }
         case .loaded(let users):
             MainListView(users: users)
-
         case .empty(let message):
             StandardEmptyView(message: message) {
                 viewModel.refresh()
             }
-
         case .error(let message):
             StandardErrorView(error: message) {
                 viewModel.refresh()
             }
         }
     }
-
 }
 
 #if DEBUG
 #Preview {
-    let _ = UserService.mockNetworkUsers()
+    Container.shared.requestUsers.mock { User.mockUsers }
+    NavigationStack { MainView() }
+}
+#Preview {
+    Container.shared.requestUsers.mock { [] }
     MainView()
 }
 #Preview {
-    let _ = UserService.mockNetworkUsers(users: [])
-    MainView()
-}
-#Preview {
-    let _ = UserService.mockNetworkError()
+    Container.shared.requestUsers.mock { throw APIError.connection }
     MainView()
 }
 #endif
+
+#Preview {
+    let _ = Container.shared.requestUsers.register { MockRequest { User.mockUsers } }
+    NavigationStack { MainView() }
+}
