@@ -43,7 +43,7 @@ class MainViewModel: ObservableObject {
                 state = .loaded(users)
             }
         } catch is CancellationError {
-            print("cancelled") // ignore
+            state = .error("Cancelled.")
         } catch {
             state = .error(error.localizedDescription + " Please try again later.")
         }
@@ -52,7 +52,7 @@ class MainViewModel: ObservableObject {
     private nonisolated func asyncLoadProcessNonisolated() async throws -> [User] {
         //        let users = try await service.list()
         let users = try await asyncRequestUsers()
-        try Task.checkCancellation()
+        try Task.checkCancellation() // don't start long running sort if not needed
         return users.sorted { ($0.name.last + $0.name.first).lowercased() < ($1.name.last + $1.name.first).lowercased() }
     }
 

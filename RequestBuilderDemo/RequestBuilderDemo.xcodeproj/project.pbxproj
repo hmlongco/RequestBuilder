@@ -11,7 +11,7 @@
 		4C7D648528DB859300E3233F /* SwiftUI+onDidAppear.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7D648428DB859300E3233F /* SwiftUI+onDidAppear.swift */; };
 		4CA223F828CD5A7000944456 /* RequestBuilderDemoMocking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA223F728CD5A7000944456 /* RequestBuilderDemoMocking.swift */; };
 		4CAAFFF12DCAC78700B4038A /* AsyncRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAFFF02DCAC78700B4038A /* AsyncRequest.swift */; };
-		4CAAFFF32DCC1F7B00B4038A /* SwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAFFF22DCC1F6600B4038A /* SwiftTests.swift */; };
+		4CAAFFF32DCC1F7B00B4038A /* MainViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CAAFFF22DCC1F6600B4038A /* MainViewModelTests.swift */; };
 		4CAAFFF52DCC211100B4038A /* FactoryTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 4CAAFFF42DCC211100B4038A /* FactoryTesting */; };
 		4CC4FE9728DE12BA00F2FF19 /* GroupedSectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC4FE9628DE12BA00F2FF19 /* GroupedSectionViews.swift */; };
 		4CC4FE9C28DE1F5300F2FF19 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC4FE9B28DE1F5300F2FF19 /* AboutView.swift */; };
@@ -69,7 +69,7 @@
 		4C7D648428DB859300E3233F /* SwiftUI+onDidAppear.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwiftUI+onDidAppear.swift"; sourceTree = "<group>"; };
 		4CA223F728CD5A7000944456 /* RequestBuilderDemoMocking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestBuilderDemoMocking.swift; sourceTree = "<group>"; };
 		4CAAFFF02DCAC78700B4038A /* AsyncRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncRequest.swift; sourceTree = "<group>"; };
-		4CAAFFF22DCC1F6600B4038A /* SwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTests.swift; sourceTree = "<group>"; };
+		4CAAFFF22DCC1F6600B4038A /* MainViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModelTests.swift; sourceTree = "<group>"; };
 		4CC4FE9628DE12BA00F2FF19 /* GroupedSectionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupedSectionViews.swift; sourceTree = "<group>"; };
 		4CC4FE9B28DE1F5300F2FF19 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		4CC4FE9E28DE247E00F2FF19 /* Color+Styles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Styles.swift"; sourceTree = "<group>"; };
@@ -197,7 +197,7 @@
 			isa = PBXGroup;
 			children = (
 				4CD7677B28C8225B00CFCF62 /* RequestBuilderDemoTests.swift */,
-				4CAAFFF22DCC1F6600B4038A /* SwiftTests.swift */,
+				4CAAFFF22DCC1F6600B4038A /* MainViewModelTests.swift */,
 			);
 			path = RequestBuilderDemoTests;
 			sourceTree = "<group>";
@@ -517,7 +517,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4CD7677C28C8225B00CFCF62 /* RequestBuilderDemoTests.swift in Sources */,
-				4CAAFFF32DCC1F7B00B4038A /* SwiftTests.swift in Sources */,
+				4CAAFFF32DCC1F7B00B4038A /* MainViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -689,7 +689,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -723,7 +723,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -745,7 +745,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RequestBuilderDemo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RequestBuilderDemo";
 			};
@@ -768,7 +768,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RequestBuilderDemo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/RequestBuilderDemo";
 			};
