@@ -22,7 +22,7 @@ enum Failure: Error {
 struct MainViewModelTests {
 
     @MainActor
-    @Test func testHappyPath() async throws {
+    @Test func testLoadedState() async throws {
         // conditions
         Container.shared.requestUsers.mock { [User.mockTS, User.mockJQ] }
         // actions
@@ -38,7 +38,7 @@ struct MainViewModelTests {
         #expect(users[1].fullname == "Tom Swift")
     }
 
-    @Test func testEmpty() async throws {
+    @Test func testEmptyState() async throws {
         // conditions
         Container.shared.requestUsers.mock { [] }
         // actions
@@ -51,7 +51,7 @@ struct MainViewModelTests {
         #expect(message.contains("No current users found."))
     }
 
-    @Test func testError() async throws {
+    @Test func testErrorState() async throws {
         // conditions
         Container.shared.requestUsers.mock { throw APIError.connection }
         // actions
