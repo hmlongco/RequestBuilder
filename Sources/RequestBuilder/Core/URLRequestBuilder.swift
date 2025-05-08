@@ -14,6 +14,7 @@ public struct URLRequestBuilder {
         case post
         case put
         case delete
+        case patch
     }
 
     // Internals
