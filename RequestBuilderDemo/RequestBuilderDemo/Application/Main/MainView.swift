@@ -48,8 +48,3 @@ struct MainView: View {
     MainView()
 }
 #endif
-
-#Preview {
-    let _ = Container.shared.requestUsers.register { MockRequest { User.mockUsers } }
-    NavigationStack { MainView() }
-}

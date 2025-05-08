@@ -12,6 +12,7 @@ import Factory
 import FactoryTesting
 
 enum Failure: Error {
+    case failed
     case message(String)
 }
 

@@ -35,7 +35,6 @@ class MainViewModel: ObservableObject {
     }
 
     func load() async {
-        state = .loading
         do {
             let users = try await asyncLoadProcessNonisolated()
             if users.isEmpty {
