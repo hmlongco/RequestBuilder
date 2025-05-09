@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Combine
-import Factory
+import FactoryKit
 
 struct MainListCardView: View {
 

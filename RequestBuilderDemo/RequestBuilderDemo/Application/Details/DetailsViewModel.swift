@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import Factory
+import FactoryKit
 import Combine
 
 @MainActor

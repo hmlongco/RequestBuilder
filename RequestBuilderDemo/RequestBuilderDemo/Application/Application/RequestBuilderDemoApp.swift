@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Factory
+import FactoryKit
 
 @main
 struct RequestBuilderDemoApp: App {

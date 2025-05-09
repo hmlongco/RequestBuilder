@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Factory
+import FactoryKit
 import RequestBuilder
 import SwiftUI
 

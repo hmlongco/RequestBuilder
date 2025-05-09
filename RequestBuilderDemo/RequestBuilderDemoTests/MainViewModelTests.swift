@@ -10,7 +10,7 @@
 import Testing
 @testable import RequestBuilderDemo
 
-import Factory
+import FactoryKit
 import FactoryTesting
 
 enum Failure: Error {

@@ -7,7 +7,7 @@
 
 import Foundation
 import Combine
-import Factory
+import FactoryKit
 
 @MainActor
 class MainViewModel: ObservableObject {

@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import Factory
+import FactoryKit
 
 extension RequestBuilderDemoApp {
 
