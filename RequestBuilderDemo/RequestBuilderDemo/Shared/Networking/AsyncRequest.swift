@@ -159,11 +159,3 @@ extension Factory {
         return EmptyView()
     }
 }
-
-extension FactorySharedContainer {
-    @discardableResult
-    public static func mock(_ transform: (Self) -> Void) -> EmptyView {
-        transform(shared)
-        return EmptyView()
-    }
-}
